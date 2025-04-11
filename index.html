@@ -97,20 +97,20 @@
 
     // Markers data with added 'category' attributes and image URLs
     const markersData = [
-      { lat: 36.05346958934558, lng: 138.1225417013597, text: "Tateishi Park", category: "city", image: "https://media.discordapp.net/attachments/871577628937707560/1359743396276736070/20240108_131614.jpg?ex=67f89738&is=67f745b8&hm=a4d42e50358c4d57b5a8a4567ff8fe10c5221ee09d6f263ef1ea5503272c59db&=&format=webp&width=1689&height=800" },
-	  { lat: 35.791204919319576, lng: 139.87161293483373, text: "Mizumoto Park", category: "city", image: "https://media.discordapp.net/attachments/871577628937707560/1359741796653072444/20231213_161104.jpg?ex=67f895bb&is=67f7443b&hm=6b686cec7ae490537b341e9a342eb76f98e9a933dca1f62285343b8e7eb58091&=&format=webp&width=1689&height=800" },
-      { lat: 35.67050302706143, lng: 139.54681967899265, text: "Jindai Botanical Gardens", category: "city", image: "https://media.discordapp.net/attachments/871577628937707560/1359740462977777885/20231130_140851.jpg?ex=67f8947d&is=67f742fd&hm=d665c611cfd4407616d31cca0dda7000d581f58190100de506dbf902733f7b6c&=&format=webp&width=1689&height=800" },
-      { lat: 35.18438669070151, lng: 139.6462977392656, text: "Miura Kaigan", category: "tourist", image: "https://media.discordapp.net/attachments/871577628937707560/1359737535886004444/image.png?ex=67f891c3&is=67f74043&hm=2156d9f12f0c1dd468c704ad7ff57043ea3490f167b3db4c83a30d90ec57b15d&=&format=webp&quality=lossless&width=1240&height=903" },
-      { lat: 32.72937623854756, lng: 129.86896707161313, text: "Mt. Nabekanmuri Park", category: "historical", image: "https://media.discordapp.net/attachments/871577628937707560/1359735175864651867/20241009_181827.jpg?ex=67f88f90&is=67f73e10&hm=04a90402ff3bc723583b091b4ec490ed27883eb998ced5fb9a118e61cc3c6128&=&format=webp&width=1423&height=800" },
-      { lat: 41.328373286467674, lng: 141.08932565296703, text: "Osorezan Bodaiji", category: "city", image: "https://media.discordapp.net/attachments/871577628937707560/1359724446855987432/20241025_145524.jpg?ex=67f88592&is=67f73412&hm=582c1c939b72ebaf5bd55dfa8bf3685460e25659d447980c3ff1253a06e43ce3&=&format=webp&width=1423&height=800" },	
+      { lat: 36.05346958934558, lng: 138.1225417013597, text: "Tateishi Park", category: "city", image: "suwa.jpg" },
+	  { lat: 35.791204919319576, lng: 139.87161293483373, text: "Mizumoto Park", category: "city", image: "mizumoto.jpg" },
+      { lat: 35.67050302706143, lng: 139.54681967899265, text: "Jindai Botanical Gardens", category: "city", image: "jindai.jpg" },
+      { lat: 35.18438669070151, lng: 139.6462977392656, text: "Miura Kaigan", category: "tourist", image: "miurakaigan.png" },
+      { lat: 32.72937623854756, lng: 129.86896707161313, text: "Mt. Nabekanmuri Park", category: "historical", image: "nagasaki.jpg" },
+      { lat: 41.328373286467674, lng: 141.08932565296703, text: "Osorezan Bodaiji", category: "city", image: "bodaiji.jpg" },	
       { lat: 35.015904830170825, lng: 135.6656124421574, text: "Daihaku Senkoji", category: "city", image: "senkoji.jpg" },	  
-      { lat: 35.25323529186975, lng: 135.97471297056364, text: "Kita-Komatsu", category: "city", image: "https://media.discordapp.net/attachments/871577628937707560/1359705813106561024/20231119_102905.jpg?ex=67f87437&is=67f722b7&hm=b684b7540e2160395a438e1239bb9d3a0f02d9d4877db26b6f525366feaea670&=&format=webp&width=1691&height=800" },	
-{ lat: 35.88383416313572, lng: 139.31337546237563, text: "Kinchakuda", category: "city", image: "https://media.discordapp.net/attachments/871577628937707560/1360083389884928020/20241001_140251.jpg?ex=67f9d3dd&is=67f8825d&hm=4be62b678b5a1855b35c440b7d3cf0f10a543d3663bc30c502d9e894b05eac73&=&format=webp&width=1240&height=930" },	
-     { lat: 36.40660161579912, lng: 140.60035055385845, text: "Hitachi Seaside Park (Autumn)", category: "city", image: "https://media.discordapp.net/attachments/871577628937707560/1359714442182529257/20241022_131816.jpg?ex=67f87c41&is=67f72ac1&hm=89c51e3d9b100f48b15be0823d3d76264d24cfb3c49b631daf5b06c977e8bb01&=&format=webp&width=1423&height=800" },	
-     { lat: 36.40716554319468, lng: 140.59343441293572, text: "Hitachi Seaside Park (Spring)", category: "city", image: "https://media.discordapp.net/attachments/871577628937707560/1359716853420658718/20240420_131308.jpg?ex=67f87e80&is=67f72d00&hm=f1cf5bc09a35da12a4cce1b724697bee75ca7984fc273b032452111520ee1fef&=&format=webp&width=1689&height=800" },	 
- { lat: 36.314145641437, lng:  139.52002772323175, text: "Ashikaga Flower Park", category: "city", image: "https://media.discordapp.net/attachments/871577628937707560/1359718594262470787/20240425_131513.jpg?ex=67f8801f&is=67f72e9f&hm=009090634185c54794d2a6e54873cd9a30fdf387e6a8ca1be54395da7dc9f567&=&format=webp&width=1691&height=800" },
-{ lat: 35.48902344726391, lng:  136.03733594954906, text: "Metasequoia Avenue", category: "city", image: "https://media.discordapp.net/attachments/871577628937707560/1359709665566654514/20241005_083707.jpg?ex=67f877ce&is=67f7264e&hm=ef698a2dd8d09994c8a48673e7096e179f02c2c897f9578158c2302d474e853c&=&format=webp&width=1240&height=930" },
- { lat: 35.427822414178216, lng: 136.04273148899696, text: "Katsurahama-enchi", category: "historical", image: "https://media.discordapp.net/attachments/871577628937707560/1359712651781083156/20241005_103925.jpg?ex=67f87a96&is=67f72916&hm=99c8aaa09fc22e2f88311d22d33d844f1c95338355462215f437c6e761df121a&=&format=webp&width=1423&height=800" }
+      { lat: 35.25323529186975, lng: 135.97471297056364, text: "Kita-Komatsu", category: "city", image: "kitakomatsu.jpg" },	
+{ lat: 35.88383416313572, lng: 139.31337546237563, text: "Kinchakuda", category: "city", image: "kinchakuda.jpg" },	
+     { lat: 36.40660161579912, lng: 140.60035055385845, text: "Hitachi Seaside Park (Autumn)", category: "city", image: "hitachi_2.jpg" },	
+     { lat: 36.40716554319468, lng: 140.59343441293572, text: "Hitachi Seaside Park (Spring)", category: "city", image: "hitachi_1.jpg" },	 
+ { lat: 36.314145641437, lng:  139.52002772323175, text: "Ashikaga Flower Park", category: "city", image: "ashikaga.jpg" },
+{ lat: 35.48902344726391, lng:  136.03733594954906, text: "Metasequoia Avenue", category: "city", image: "avenue.jpg" },
+ { lat: 35.427822414178216, lng: 136.04273148899696, text: "Katsurahama-enchi", category: "historical", image: "katsurahama.jpg" }
     ];
 
     let markers = [];
