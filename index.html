@@ -3,335 +3,1181 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
   <title>Blog</title>
+
   <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
 
   <style>
+
     html, body {
       margin: 0;
       padding: 0;
     }
 
+
     #map {
+
       width: min(1200px, 78.5vw);
+
       height: min(600px, 86.5vh);
+
       border: 1px solid black;
+
       position: relative;
-      margin-left: auto;
-      margin-right: auto;
-	  margin: 15px auto;	  
+
+      margin: 15px auto;
+
     }
 
+
+
     .custom-marker {
+
       width: 15px;
+
       height: 15px;
+
       background-color: red;
+
       border-radius: 50%;
+
       border: 1px solid black;
+
       transition: transform 0.2s ease;
+
       transform-origin: center center;
+
       display: flex;
+
       justify-content: center;
+
       align-items: center;
+
     }
+
+
 
     .custom-marker.clicked,
     .custom-marker:hover {
+
       transform: scale(1.2);
+
     }
+
+
 
     .info-box {
+
       position: absolute;
+
       background: white;
+
       padding: 10px;
+
       border-radius: 8px;
-      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+
+      box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+
       display: none;
+
       pointer-events: auto;
+
       z-index: 999;
+
       min-width: 150px;
-      opacity: 1;
-      margin-top: 0;
+
       color: black;
-	  font-size: 16px;
+
+      font-size: 16px;
+
     }
+
+
 
     .info-box p {
+
       margin-top: 0;
-      padding: 0;
+
       margin-bottom: 5px;
+
     }
+
+
 
     .info-box img {
+
       width: auto;
+
       height: 250px;
+
       display: block;
-      opacity: 1;
+
+      cursor: pointer;
+
     }
+
+
 
     .leaflet-control-attribution {
+
       display: none !important;
+
     }
+
+
+
 
     #filterMenu {
+
       position: absolute;
+
       bottom: 10px;
+
       right: 10px;
-      background: rgba(255, 255, 255, 0.7);
+
+      background: rgba(255,255,255,0.7);
+
       padding: 10px;
+
       border-radius: 5px;
+
       z-index: 1000;
+
       display: flex;
+
       flex-direction: column;
-	  font-size: 14px;
+
+      font-size: 14px;
+
     }
+
+
+
 
     #filterMenu label {
+
       margin-bottom: 5px;
+
     }
+
+
+
 
     header {
+
       background: #333;
+
       padding: 10px 20px;
+
       display: flex;
+
       gap: 10px;
+
       justify-content: center;
+
       align-items: center;
+
     }
+
+
+
 
     header a {
+
       text-decoration: none;
+
     }
+
+
+
 
     header button {
+
       background: #4da6ff;
+
       color: white;
+
       border: none;
+
       padding: 10px 18px;
+
       border-radius: 5px;
+
       cursor: pointer;
+
       font-size: 16px;
+
     }
 
+
+
+
     header button:hover {
+
       background: #2f89e0;
+
     }
+
+
+
+
+    /* Dark transparent image viewer background */
+
+
+    #imageOverlay {
+
+      display: none;
+
+      position: fixed;
+
+      top: 0;
+
+      left: 0;
+
+      width: 100vw;
+
+      height: 100vh;
+
+      background: rgba(0,0,0,0.35);
+
+      z-index: 1999;
+
+    }
+
+
+
+
+    #imageViewer {
+
+      display: none;
+
+      position: fixed;
+
+      top: 50%;
+
+      left: 50%;
+
+      transform: translate(-50%, -50%);
+
+
+      width: 78.5vw;
+
+      height: 86.5vh;
+
+
+      background: white;
+
+
+      z-index: 2000;
+
+
+      box-shadow: 0 2px 10px rgba(0,0,0,0.5);
+
+
+      border-radius: 8px;
+
+
+      overflow: hidden;
+
+    }
+
+
+
+
+    #imageViewer img {
+
+
+      width: 100%;
+
+      height: 100%;
+
+
+      object-fit: contain;
+
+
+    }
+
+
+
+
+    #closeViewer {
+
+
+      position: absolute;
+
+
+      top: 8px;
+
+
+      right: 12px;
+
+
+      font-size: 28px;
+
+
+      font-weight: bold;
+
+
+      cursor: pointer;
+
+
+      color: white;
+
+
+      z-index: 2001;
+
+
+    }
+
+
+
+
+    #closeViewer:hover {
+
+
+      color: #4da6ff;
+
+
+    }
+
+
+
+
+    /* Gallery arrows */
+
+
+    #leftArrow,
+    #rightArrow {
+
+
+      position: absolute;
+
+
+      top: 50%;
+
+
+      transform: translateY(-50%);
+
+
+      font-size: 60px;
+
+
+      font-weight: bold;
+
+
+      color: white;
+
+
+      cursor: pointer;
+
+
+      opacity: 0;
+
+
+      transition: opacity 0.2s;
+
+
+      user-select: none;
+
+
+      z-index: 2001;
+
+
+    }
+
+
+
+
+    #leftArrow {
+
+
+      left: 20px;
+
+
+    }
+
+
+
+
+    #rightArrow {
+
+
+      right: 20px;
+
+
+    }
+
+
+
+
+    #imageViewer:hover #leftArrow,
+    #imageViewer:hover #rightArrow {
+
+
+      opacity: 0.6;
+
+
+    }
+
+
+
+
+    #leftArrow:hover,
+    #rightArrow:hover {
+
+
+      color: #4da6ff;
+
+
+      opacity: 1;
+
+
+    }
+
+
+
   </style>
+
 </head>
+
 
 <body>
 
+
 <header>
+
   <a href="index.html"><button>Home</button></a>
+
   <a href="matsuya.html"><button>Matsuya</button></a>
+
   <a href="concerts.html"><button>Concerts</button></a>
+
   <a href="journeymap.html"><button>JourneyMap</button></a>
+
 </header>
 
+
+
 <div id="map">
+
   <div id="filterMenu">
-    <label><input type="checkbox" id="categoryPhotos" checked> Photos</label>
-    <label><input type="checkbox" id="categoryJourneys" checked> Journeys</label>
-    <label><input type="checkbox" id="categoryTest" checked> Test</label>
+
+    <label>
+      <input type="checkbox" id="categoryPhotos" checked>
+      Photos
+    </label>
+
+
+    <label>
+      <input type="checkbox" id="categoryJourneys" checked>
+      Journeys
+    </label>
+
+
+    <label>
+      <input type="checkbox" id="categoryTest" checked>
+      Test
+    </label>
+
+
   </div>
+
 </div>
 
+
+
+
+<div id="imageOverlay"></div>
+
+
+
+<div id="imageViewer">
+
+  <span id="closeViewer">×</span>
+
+
+  <span id="leftArrow">‹</span>
+
+
+  <img id="largeImage">
+
+
+  <span id="rightArrow">›</span>
+
+
+</div>
+
+
+
+
 <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
-
 <script>
-  const map = L.map('map').setView([36.2048, 138.2529], 5);
-  
-  L.DomEvent.disableClickPropagation(document.getElementById('filterMenu'));
-  L.DomEvent.disableScrollPropagation(document.getElementById('filterMenu'));
 
-  L.tileLayer('https://{s}.tile.thunderforest.com/neighbourhood/{z}/{x}/{y}.png?apikey=db5ae1f5778a448ca662554581f283c5', {
-    attribution: '&copy; OpenStreetMap contributors &copy; Thunderforest'
-  }).addTo(map);
+const map = L.map('map', {
+  keyboard: false
+}).setView(
+  [36.2048,138.2529],
+  5
+);
 
-  const markersData = [
-    { lat: 36.05346958934558, lng: 138.1225417013597, text: "Tateishi Park", category: "photos", image: "suwa.jpg" },
-    { lat: 35.791204919319576, lng: 139.87161293483373, text: "Mizumoto Park", category: "photos", image: "mizumoto.jpg" },
-    { lat: 35.67050302706143, lng: 139.54681967899265, text: "Jindai Botanical Gardens", category: "photos", image: "jindai.jpg" },
-    { lat: 35.18438669070151, lng: 139.6462977392656, text: "Miura Kaigan", category: "photos", image: "miurakaigan.png" },
-    { lat: 32.72937623854756, lng: 129.86896707161313, text: "Mt. Nabekanmuri Park", category: "photos", image: "nagasaki.jpg" },
-    { lat: 41.328373286467674, lng: 141.08932565296703, text: "Osorezan Bodaiji", category: "photos", image: "bodaiji.jpg" },
-    { lat: 35.015904830170825, lng: 135.6656124421574, text: "Daihaku Senkoji", category: "photos", image: "senkoji.jpg" },
-    { lat: 35.25323529186975, lng: 135.97471297056364, text: "Kita-Komatsu", category: "photos", image: "kitakomatsu.jpg" },
-    { lat: 35.88383416313572, lng: 139.31337546237563, text: "Kinchakuda", category: "photos", image: "kinchakuda.jpg" },
-    { lat: 36.40660161579912, lng: 140.60035055385845, text: "Hitachi Seaside Park (Autumn)", category: "photos", image: "hitachi_1.jpg" },
-    { lat: 36.40716554319468, lng: 140.59343441293572, text: "Hitachi Seaside Park (Spring)", category: "photos", image: "hitachi_2.jpg" },
-    { lat: 36.314145641437, lng: 139.52002772323175, text: "Ashikaga Flower Park", category: "photos", image: "ashikaga.jpg" },
-    { lat: 35.48902344726391, lng: 136.03733594954906, text: "Metasequoia Avenue", category: "photos", image: "avenue.jpg" },
-    { lat: 35.427822414178216, lng: 136.04273148899696, text: "Katsurahama-enchi", category: "photos", image: "katsurahama.jpg" },
-    { lat: 34.98537834574205, lng: 135.75811838407432, text: "100% Exploration", category: "journeys", image: "avenue.jpg" }
-  ];
 
-  let markers = [];
-  const infoBoxes = {};
-  let currentInfoBox = null;
 
+L.DomEvent.disableClickPropagation(
+  document.getElementById('filterMenu')
+);
 
-  markersData.forEach(markerData => {
+L.DomEvent.disableScrollPropagation(
+  document.getElementById('filterMenu')
+);
 
-    const div = document.createElement('div');
-    div.className = 'custom-marker';
 
-    if (markerData.category === 'journeys') {
-      div.style.backgroundColor = '#4da6ff';
-    }
 
-    const divIcon = L.divIcon({
-      className: '',
-      html: div.outerHTML,
-      iconSize: [20, 20],
-      iconAnchor: [10, 10]
-    });
+L.tileLayer(
+'https://{s}.tile.thunderforest.com/neighbourhood/{z}/{x}/{y}.png?apikey=db5ae1f5778a448ca662554581f283c5',
+{
+ attribution:'&copy; OpenStreetMap contributors &copy; Thunderforest'
+}
+).addTo(map);
 
 
-    const marker = L.marker(
-      [markerData.lat, markerData.lng],
-      { icon: divIcon }
-    ).addTo(map);
 
 
-    const infoBox = document.createElement('div');
 
-    infoBox.className = 'info-box';
+const markersData = [
 
-    infoBox.innerHTML = `
-      <p>${markerData.text}</p>
-      <img src="${markerData.image}" alt="${markerData.text}">
-    `;
+{ lat:36.05346958934558, lng:138.1225417013597, text:"Tateishi Park", category:"photos", image:"suwa.jpg" },
 
-    infoBox.style.display = 'none';
+{ lat:35.791204919319576, lng:139.87161293483373, text:"Mizumoto Park", category:"photos", image:"mizumoto.jpg" },
 
+{ lat:35.67050302706143, lng:139.54681967899265, text:"Jindai Botanical Gardens", category:"photos", image:"jindai.jpg" },
 
-    // Changed from document.body.appendChild()
-    // to keep popup positioning relative to the map
-    document.getElementById('map').appendChild(infoBox);
+{ lat:35.18438669070151, lng:139.6462977392656, text:"Miura Kaigan", category:"photos", image:"miurakaigan.png" },
 
+{ lat:32.72937623854756, lng:129.86896707161313, text:"Mt. Nabekanmuri Park", category:"photos", image:"nagasaki.jpg" },
 
-    infoBoxes[`${markerData.lat},${markerData.lng}`] = infoBox;
+{ lat:41.328373286467674, lng:141.08932565296703, text:"Osorezan Bodaiji", category:"photos", image:"bodaiji.jpg" },
 
+{ lat:35.015904830170825, lng:135.6656124421574, text:"Daihaku Senkoji", category:"photos", image:"senkoji.jpg" },
 
-    marker.category = markerData.category;
-    markers.push(marker);
+{ lat:35.25323529186975, lng:135.97471297056364, text:"Kita-Komatsu", category:"photos", image:"kitakomatsu.jpg" },
 
+{ lat:35.88383416313572, lng:139.31337546237563, text:"Kinchakuda", category:"photos", image:"kinchakuda.jpg" },
 
-    const updateInfoBoxPosition = () => {
+{ lat:36.40660161579912, lng:140.60035055385845, text:"Hitachi Seaside Park (Autumn)", category:"photos", image:"hitachi_1.jpg" },
 
-      const pos = map.latLngToContainerPoint(marker.getLatLng());
+{ lat:36.40716554319468, lng:140.59343441293572, text:"Hitachi Seaside Park (Spring)", category:"photos", image:"hitachi_2.jpg" },
 
-      infoBox.style.left = `${pos.x - (infoBox.offsetWidth / 2)}px`;
-      infoBox.style.top = `${pos.y + 8}px`;
+{ lat:36.314145641437, lng:139.52002772323175, text:"Ashikaga Flower Park", category:"photos", image:"ashikaga.jpg" },
 
-    };
+{ lat:35.48902344726391, lng:136.03733594954906, text:"Metasequoia Avenue", category:"photos", image:"avenue.jpg" },
 
+{ lat:35.427822414178216, lng:136.04273148899696, text:"Katsurahama-enchi", category:"photos", image:"katsurahama.jpg" },
 
-    marker.on('mouseover', () => {
+{ lat:34.98537834574205, lng:135.75811838407432, text:"100% Exploration", category:"journeys", image:"avenue.jpg" }
 
-      infoBox.style.display = 'block';
-	  
-	  updateInfoBoxPosition();
+];
 
-    });
 
 
-    marker.on('mouseout', () => {
 
-      if (currentInfoBox !== infoBox) {
-        infoBox.style.display = 'none';
-      }
 
-    });
+let markers = [];
 
+let currentInfoBox = null;
 
-    marker.on('click', (e) => {
 
-      e.originalEvent.stopPropagation();
 
+// Gallery data
 
-      if (currentInfoBox === infoBox) {
-        return;
-      }
+let imageList = [];
 
+let currentImageIndex = 0;
 
-      if (currentInfoBox) {
-        currentInfoBox.style.display = 'none';
-      }
 
 
-      currentInfoBox = infoBox;
 
-      updateInfoBoxPosition();
 
-      infoBox.style.display = 'block';
+markersData.forEach(markerData=>{
 
-    });
 
+imageList.push({
 
-    map.on('move zoom zoomstart', () => {
+ image:markerData.image,
 
-      if (currentInfoBox === infoBox) {
+ title:markerData.text
 
-        updateInfoBoxPosition();
+});
 
-      }
 
-    });
 
-  });
-  map.on('click', () => {
 
-    currentInfoBox = null;
+const div=document.createElement("div");
 
-    document.querySelectorAll('.info-box')
-      .forEach(box => box.style.display = 'none');
+div.className="custom-marker";
 
-  });
 
 
-  const updateMarkerVisibility = () => {
+if(markerData.category==="journeys"){
 
-    const hidePhotos = !document.getElementById('categoryPhotos').checked;
-    const hideJourneys = !document.getElementById('categoryJourneys').checked;
-    const hideTest = !document.getElementById('categoryTest').checked;
+ div.style.backgroundColor="#4da6ff";
 
+}
 
-    markers.forEach(marker => {
 
-      if (
-        (hidePhotos && marker.category === 'photos') ||
-        (hideJourneys && marker.category === 'journeys') ||
-        (hideTest && marker.category === 'test')
-      ) {
 
-        map.removeLayer(marker);
+const icon=L.divIcon({
 
-      } else {
+ className:"",
 
-        marker.addTo(map);
+ html:div.outerHTML,
 
-      }
+ iconSize:[20,20],
 
-    });
+ iconAnchor:[10,10]
 
-  };
+});
 
 
-  document.getElementById('categoryPhotos')
-    .addEventListener('change', updateMarkerVisibility);
 
-  document.getElementById('categoryJourneys')
-    .addEventListener('change', updateMarkerVisibility);
 
-  document.getElementById('categoryTest')
-    .addEventListener('change', updateMarkerVisibility);
 
+const marker=L.marker(
 
-  updateMarkerVisibility();
+[markerData.lat,markerData.lng],
+
+{icon:icon}
+
+).addTo(map);
+
+
+
+
+
+const infoBox=document.createElement("div");
+
+infoBox.className="info-box";
+
+
+
+infoBox.innerHTML=`
+
+<p>${markerData.text}</p>
+
+<img src="${markerData.image}" alt="${markerData.text}">
+
+`;
+
+
+
+
+
+document.getElementById("map").appendChild(infoBox);
+
+
+
+marker.category=markerData.category;
+
+markers.push(marker);
+
+
+
+
+
+const updateInfoBoxPosition=()=>{
+
+
+const pos =
+map.latLngToContainerPoint(
+marker.getLatLng()
+);
+
+
+infoBox.style.left =
+`${pos.x-(infoBox.offsetWidth/2)}px`;
+
+
+infoBox.style.top =
+`${pos.y+8}px`;
+
+
+};
+
+
+
+
+
+marker.on("mouseover",()=>{
+
+
+infoBox.style.display="block";
+
+updateInfoBoxPosition();
+
+
+});
+
+
+
+
+
+marker.on("mouseout",()=>{
+
+
+if(currentInfoBox!==infoBox){
+
+infoBox.style.display="none";
+
+}
+
+});
+
+
+
+
+
+marker.on("click",(e)=>{
+
+
+e.originalEvent.stopPropagation();
+
+
+
+if(currentInfoBox){
+
+currentInfoBox.style.display="none";
+
+}
+
+
+
+currentInfoBox=infoBox;
+
+
+updateInfoBoxPosition();
+
+
+infoBox.style.display="block";
+
+
+});
+
+
+
+
+
+map.on("move zoom zoomstart",()=>{
+
+
+if(currentInfoBox===infoBox){
+
+updateInfoBoxPosition();
+
+}
+
+
+});
+
+
+
+});
+
+
+
+
+
+
+map.on("click",()=>{
+
+
+currentInfoBox=null;
+
+
+document.querySelectorAll(".info-box")
+.forEach(box=>{
+
+box.style.display="none";
+
+});
+
+
+});
+
+
+
+
+
+
+
+
+// =======================
+// IMAGE VIEWER
+// =======================
+
+
+const imageViewer =
+document.getElementById("imageViewer");
+
+
+const imageOverlay =
+document.getElementById("imageOverlay");
+
+
+const largeImage =
+document.getElementById("largeImage");
+
+
+const closeViewer =
+document.getElementById("closeViewer");
+
+
+const leftArrow =
+document.getElementById("leftArrow");
+
+
+const rightArrow =
+document.getElementById("rightArrow");
+
+
+
+
+
+
+
+function showImage(){
+
+
+largeImage.src =
+imageList[currentImageIndex].image;
+
+
+}
+
+
+
+
+
+
+
+
+document.addEventListener("click",(e)=>{
+
+
+if(
+e.target.tagName==="IMG" &&
+e.target.closest(".info-box")
+){
+
+
+const filename =
+e.target.src.split("/").pop();
+
+
+
+currentImageIndex =
+imageList.findIndex(
+item=>item.image===filename
+);
+
+
+
+showImage();
+
+
+imageViewer.style.display="block";
+
+imageOverlay.style.display="block";
+
+
+}
+
+
+});
+
+
+
+
+
+
+
+
+rightArrow.addEventListener("click",(e)=>{
+
+
+e.stopPropagation();
+
+
+currentImageIndex++;
+
+
+if(currentImageIndex>=imageList.length){
+
+currentImageIndex=0;
+
+}
+
+
+showImage();
+
+
+});
+
+
+
+
+
+
+
+leftArrow.addEventListener("click",(e)=>{
+
+
+e.stopPropagation();
+
+
+currentImageIndex--;
+
+
+if(currentImageIndex<0){
+
+currentImageIndex=imageList.length-1;
+
+}
+
+
+showImage();
+
+
+});
+
+
+
+
+
+
+
+
+// Keyboard controls
+
+
+document.addEventListener("keydown",(e)=>{
+
+
+if(imageViewer.style.display!=="block"){
+
+return;
+
+}
+
+
+
+if(e.key==="ArrowRight"){
+
+
+currentImageIndex++;
+
+
+if(currentImageIndex>=imageList.length){
+
+currentImageIndex=0;
+
+}
+
+
+showImage();
+
+
+}
+
+
+
+
+if(e.key==="ArrowLeft"){
+
+
+currentImageIndex--;
+
+
+if(currentImageIndex<0){
+
+currentImageIndex=imageList.length-1;
+
+}
+
+
+showImage();
+
+
+}
+
+
+
+
+
+if(e.key==="Escape"){
+
+
+imageViewer.style.display="none";
+
+imageOverlay.style.display="none";
+
+
+}
+
+
+
+});
+
+
+
+
+
+
+
+closeViewer.addEventListener("click",()=>{
+
+
+imageViewer.style.display="none";
+
+imageOverlay.style.display="none";
+
+
+});
+
+
+
+
+
+
+
+
+imageOverlay.addEventListener("click",()=>{
+
+
+imageViewer.style.display="none";
+
+imageOverlay.style.display="none";
+
+
+});
+
+
+
+
+
+
+
+largeImage.addEventListener("click",(e)=>{
+
+
+e.stopPropagation();
+
+
+});
+
+
+
+
+
+
+
+
+
+// =======================
+// CATEGORY FILTERING	
+// =======================
+
+
+function updateMarkerVisibility(){
+
+
+const hidePhotos =
+!document.getElementById("categoryPhotos").checked;
+
+
+
+const hideJourneys =
+!document.getElementById("categoryJourneys").checked;
+
+
+
+const hideTest =
+!document.getElementById("categoryTest").checked;
+
+
+
+
+
+markers.forEach(marker=>{
+
+
+if(
+
+(hidePhotos && marker.category==="photos") ||
+
+(hideJourneys && marker.category==="journeys") ||
+
+(hideTest && marker.category==="test")
+
+){
+
+
+map.removeLayer(marker);
+
+
+}
+
+else{
+
+
+marker.addTo(map);
+
+
+}
+
+
+
+});
+
+
+}
+
+
+
+
+
+
+
+document.getElementById("categoryPhotos")
+.addEventListener(
+"change",
+updateMarkerVisibility
+);
+
+
+
+document.getElementById("categoryJourneys")
+.addEventListener(
+"change",
+updateMarkerVisibility
+);
+
+
+
+document.getElementById("categoryTest")
+.addEventListener(
+"change",
+updateMarkerVisibility
+);
+
+
+
+
+
+updateMarkerVisibility();
+
+
 
 </script>
 
 </body>
-</html>  
+</html>
