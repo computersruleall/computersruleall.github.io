@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Concerts</title>
+
+  <style>
+    .comment {
+      text-align: center;
+      font-size: 16px;
+    }
+
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      background: white;
+    }
+
+    header {
+      background: #333;
+      padding: 10px 20px;
+      display: flex;
+      gap: 10px;
+      justify-content: center;
+    }
+
+    header a {
+      text-decoration: none;
+    }
+
+    header button {
+      background: #4da6ff;
+      color: white;
+      border: none;
+      padding: 10px 18px;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 16px;
+    }
+
+    header button:hover {
+      background: #2f89e0;
+    }
+
+    h1 {
+      text-align: center;
+      margin-top: 30px;
+    }
+
+#togglePerformers {
+  text-align: center;
+  cursor: pointer;
+  color: #000;
+  margin: 20px auto 0;
+  font-size: 16px;
+}
+
+#togglePerformers:hover {
+  text-decoration: underline;
+}
+
+#togglePerformers:hover {
+  color: #2f89e0;	
+}
+
+    .hidden {
+      display: none;
+    }
+
+    table {
+      border-collapse: collapse;
+      width: auto;
+      margin: 5px auto;
+    }
+
+    th,
+    td {
+      border: 1px solid #ccc;
+      padding: 12px;
+      text-align: center;
+      background: transparent;
+    }
+
+    th {
+      font-weight: bold;
+    }
+
+    th:first-child,
+    td:first-child {
+      width: 150px;
+      white-space: nowrap;
+    }
+
+    th:nth-child(2),
+    td:nth-child(2) {
+      width: 450px;
+      text-align: center;
+    }
+
+    th:nth-child(3),
+    td:nth-child(3) {
+      width: 600px;
+      word-wrap: break-word;
+    }
+  </style>
+</head>
+
+<body>
+
+<header>
+  <a href="index.html"><button>Home</button></a>
+  <a href="matsuya.html"><button>Matsuya</button></a>
+  <a href="concerts.html"><button>Concerts</button></a>
+  <a href="journeymap.html"><button>JourneyMap</button></a>
+</header>
+
+<p style="text-align:center;">
+  <span id="togglePerformers">[Show Performers]</span>
+</p>
+<table>
+  <tr>
+    <th>Date</th>
+    <th>Concert</th>
+    <th>Performers</th>
+  </tr>
+
+  <tr>
+    <td>2023/09/24</td>
+    <td>nayuta Birthday live 青の旅立ち</td>
+    <td>nayuta</td>
+  </tr>
+
+  <tr>
+    <td>2023/11/05</td>
+    <td>東方明學祭　捌</td>
+    <td>ZYTOKINE, 幽閉サテライト</td>
+  </tr>
+
+  <tr>
+    <td>2024/02/11</td>
+    <td>はるまきごはん10th Anniversaryワンマンツアー「ハンドメイドギンガ」</td>
+    <td>はるまきごはん</td>
+  </tr>
+
+  <tr>
+    <td>2024/03/31</td>
+    <td>MIKU FES’24（春）～Happy 16th Birthday～</td>
+    <td>初音ミク</td>
+  </tr>
+
+  <tr>
+    <td>2024/04/23</td>
+    <td>超東方LIVEステージ2024 Day 1</td>
+    <td>TUMENECO, Alstroemeria Records, A-One, 森羅万象, Digital Wing, 魂音線</td>
+  </tr>
+
+  <tr>
+    <td>2024/05/26</td>
+    <td>yuiko 3rd one-man live「 LIVE Primary 03」</td>
+    <td>yuiko</td>
+  </tr>
+
+  <tr>
+    <td>2024/07/19</td>
+    <td>Orangestar ONEMAN LIVE "And So Henceforth," Tour</td>
+    <td>Orangestar</td>
+  </tr>
+
+  <tr>
+    <td>2024/08/24</td>
+    <td>あつまれ！東方ステーション2024 in ところざわサクラタウン</td>
+    <td>Myui Playing, Alstroemeria Records, ビートまりお</td>
+  </tr>
+
+  <tr>
+    <td>2024/09/01</td>
+    <td>TUMENECO 1st One-man LIVE</td>
+    <td>TUMENECO</td>
+  </tr>
+
+  <tr>
+    <td>2024/10/05</td>
+    <td>TOUHOU FREAKS VOL. 3</td>
+    <td>豚乙女, MD, Route9, Pastel World, Water Color Melody</td>
+  </tr>
+
+  <tr>
+    <td>2025/11/29</td>
+    <td>東方LIVEBOX SP</td>
+    <td>Alstroemeria Records, Crazy Beats, DiGiTAL WiNG, SOUND HOLIC</td>
+  </tr>
+
+  <tr>
+    <td>2026/02/13</td>
+    <td>極東最前線107 ~俺に真実を教えてくれ</td>
+    <td>eastern youth, テレビ大陸音頭</td>
+  </tr>
+
+  <tr>
+    <td>2026/02/14</td>
+    <td>デコミク LIVE starring 初音ミク『Hello』</td>
+    <td>DECO*27</td>
+  </tr>
+
+  <tr>
+    <td>2026/02/14</td>
+    <td>Grazy Crazy!! #12</td>
+    <td>8686m</td>
+  </tr>
+
+  <tr>
+    <td>2026/02/14</td>
+    <td>霜月はるか Planetarium Live 2026 ～星降る夜の追憶～</td>
+    <td>霜月はるか</td>
+  </tr>
+
+  <tr>
+    <td>2026/04/18</td>
+    <td>東方LIVEステージ2026 Day 1</td>
+    <td>COOL&CREATE, 石鹸屋, 魂音泉, 東京アクティブNEETs, 幽閉サテライト, ノーストリリア, 巡遊</td>
+  </tr>
+
+  <tr>
+    <td>2026/04/19</td>
+    <td>東方LIVEステージ2026 Day 2</td>
+    <td>Alstroemeria Records, 岸田教団＆THE明星ロケッツ, 森羅万象, DiGiTAL WiNG, 豚乙女</td>
+  </tr>
+
+  <tr>
+    <td>2026/04/20</td>
+    <td>TOHO LIVE PARTY vol.29</td>
+    <td>CrazyBeats, 舞々, IRON ATTACK!, 紺碧studio, NJK Record, S.K’/Sound</td>
+  </tr>
+
+  <tr>
+    <td>2026/04/25</td>
+    <td>MIKU EXPO 2026 NORTH AMERICA</td>
+    <td>初音ミク</td>
+  </tr>
+
+  <tr>
+    <td>2026/05/02</td>
+    <td>ZotCon Miku Concert</td>
+    <td>初音ミク</td>
+  </tr>
+
+  <tr>
+    <td>2026/07/05</td>
+    <td>JAPAN MUSIC VOCALOID</td>
+    <td>kz(livetune), さたぱんP, TeddyLoid, 八王子P, picco</td>
+  </tr>
+
+</table>
+
+<script>
+  const toggleText = document.getElementById("togglePerformers");
+  const performerCells = document.querySelectorAll("th:nth-child(3), td:nth-child(3)");
+  const table = document.querySelector("table");
+
+  // Hide performers by default
+  performerCells.forEach(cell => {
+    cell.classList.add("hidden");
+  });
+
+  table.style.width = "auto";
+
+  // Toggle performers visibility
+  toggleText.addEventListener("click", () => {
+    performerCells.forEach(cell => {
+      cell.classList.toggle("hidden");
+    });
+
+    if (toggleText.textContent === "[Show Performers]") {
+      toggleText.textContent = "[Hide Performers]";
+    } else {
+      toggleText.textContent = "[Show Performers]";
+    }
+
+    // Allow table width to resize after column visibility changes
+    table.style.width = "auto";
+  });
+</script>
+
+</body>
+</html>
