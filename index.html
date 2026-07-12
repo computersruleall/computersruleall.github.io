@@ -139,6 +139,9 @@
 
 <script>
   const map = L.map('map').setView([36.2048, 138.2529], 5);
+  
+  L.DomEvent.disableClickPropagation(document.getElementById('filterMenu'));
+  L.DomEvent.disableScrollPropagation(document.getElementById('filterMenu'));
 
   L.tileLayer('https://{s}.tile.thunderforest.com/neighbourhood/{z}/{x}/{y}.png?apikey=db5ae1f5778a448ca662554581f283c5', {
     attribution: '&copy; OpenStreetMap contributors &copy; Thunderforest'
