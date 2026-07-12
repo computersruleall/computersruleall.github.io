@@ -1,527 +1,292 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-
-  <title>Blog</title>
-
-  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
-
-  <style>
-
-    html, body {
-      margin: 0;
-      padding: 0;
-    }
-
-
-    #map {
-
-      width: min(1200px, 78.5vw);
-
-      height: min(600px, 86.5vh);
-
-      border: 1px solid black;
-
-      position: relative;
-
-      margin: 15px auto;
-
-    }
-
-
-
-    .custom-marker {
-
-      width: 15px;
-
-      height: 15px;
-
-      background-color: red;
-
-      border-radius: 50%;
-
-      border: 1px solid black;
-
-      transition: transform 0.2s ease;
-
-      transform-origin: center center;
-
-      display: flex;
-
-      justify-content: center;
-
-      align-items: center;
-
-    }
-
-
-
-    .custom-marker.clicked,
-    .custom-marker:hover {
-
-      transform: scale(1.2);
-
-    }
-
-
-
-    .info-box {
-
-      position: absolute;
-
-      background: white;
-
-      padding: 10px;
-
-      border-radius: 8px;
-
-      box-shadow: 0 2px 6px rgba(0,0,0,0.3);
-
-      display: none;
-
-      pointer-events: auto;
-
-      z-index: 999;
-
-      min-width: 150px;
-
-      color: black;
-
-      font-size: 16px;
-
-    }
-
-
-
-    .info-box p {
-
-      margin-top: 0;
-
-      margin-bottom: 5px;
-
-    }
-
-
-
-    .info-box img {
-
-      width: auto;
-
-      height: 250px;
-
-      display: block;
-
-      cursor: pointer;
-
-    }
-
-
-
-    .leaflet-control-attribution {
-
-      display: none !important;
-
-    }
-
-
-
-
-    #filterMenu {
-
-      position: absolute;
-
-      bottom: 10px;
-
-      right: 10px;
-
-      background: rgba(255,255,255,0.7);
-
-      padding: 10px;
-
-      border-radius: 5px;
-
-      z-index: 1000;
-
-      display: flex;
-
-      flex-direction: column;
-
-      font-size: 14px;
-
-    }
-
-
-
-
-    #filterMenu label {
-
-      margin-bottom: 5px;
-
-    }
-
-
-
-
-    header {
-
-      background: #333;
-
-      padding: 10px 20px;
-
-      display: flex;
-
-      gap: 10px;
-
-      justify-content: center;
-
-      align-items: center;
-
-    }
-
-
-
-
-    header a {
-
-      text-decoration: none;
-
-    }
-
-
-
-
-    header button {
-
-      background: #4da6ff;
-
-      color: white;
-
-      border: none;
-
-      padding: 10px 18px;
-
-      border-radius: 5px;
-
-      cursor: pointer;
-
-      font-size: 16px;
-
-    }
-
-
-
-
-    header button:hover {
-
-      background: #2f89e0;
-
-    }
-
-
-
-
-    /* Dark transparent image viewer background */
-
-
-    #imageOverlay {
-
-      display: none;
-
-      position: fixed;
-
-      top: 0;
-
-      left: 0;
-
-      width: 100vw;
-
-      height: 100vh;
-
-      background: rgba(0,0,0,0.35);
-
-      z-index: 1999;
-
-    }
-
-
-
-
-    #imageViewer {
-
-      display: none;
-
-      position: fixed;
-
-      top: 50%;
-
-      left: 50%;
-
-      transform: translate(-50%, -50%);
-
-
-      width: 78.5vw;
-
-      height: 86.5vh;
-
-
-      background: white;
-
-
-      z-index: 2000;
-
-
-      box-shadow: 0 2px 10px rgba(0,0,0,0.5);
-
-
-      border-radius: 8px;
-
-
-      overflow: hidden;
-
-    }
-
-
-
-
-    #imageViewer img {
-
-
-      width: 100%;
-
-      height: 100%;
-
-
-      object-fit: contain;
-
-
-    }
-
-
-
-
-    #closeViewer {
-
-
-      position: absolute;
-
-
-      top: 8px;
-
-
-      right: 12px;
-
-
-      font-size: 28px;
-
-
-      font-weight: bold;
-
-
-      cursor: pointer;
-
-
-      color: white;
-
-
-      z-index: 2001;
-
-
-    }
-
-
-
-
-    #closeViewer:hover {
-
-
-      color: #4da6ff;
-
-
-    }
-
-
-
-
-    /* Gallery arrows */
-
-
-    #leftArrow,
-    #rightArrow {
-
-
-      position: absolute;
-
-
-      top: 50%;
-
-
-      transform: translateY(-50%);
-
-
-      font-size: 60px;
-
-
-      font-weight: bold;
-
-
-      color: white;
-
-
-      cursor: pointer;
-
-
-      opacity: 0;
-
-
-      transition: opacity 0.2s;
-
-
-      user-select: none;
-
-
-      z-index: 2001;
-
-
-    }
-
-
-
-
-    #leftArrow {
-
-
-      left: 20px;
-
-
-    }
-
-
-
-
-    #rightArrow {
-
-
-      right: 20px;
-
-
-    }
-
-
-
-
-    #imageViewer:hover #leftArrow,
-    #imageViewer:hover #rightArrow {
-
-
-      opacity: 0.6;
-
-
-    }
-
-
-
-
-    #leftArrow:hover,
-    #rightArrow:hover {
-
-
-      color: #4da6ff;
-
-
-      opacity: 1;
-
-
-    }
-
-
-
-  </style>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+<title>Blog</title>
+
+<link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+
+<style>
+
+html, body {
+  margin: 0;
+  padding: 0;
+}
+
+#map {
+  width: min(1200px, 78.5vw);
+  height: min(600px, 86.5vh);
+  border: 1px solid black;
+  position: relative;
+  margin: 15px auto;
+}
+
+.custom-marker {
+  width: 15px;
+  height: 15px;
+  background-color: red;
+  border-radius: 50%;
+  border: 1px solid black;
+  transition: transform 0.2s ease;
+  transform-origin: center center;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.custom-marker.clicked,
+.custom-marker:hover {
+  transform: scale(1.2);
+}
+
+.info-box {
+  position: absolute;
+  background: white;
+  padding: 10px;
+  border-radius: 8px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+  display: none;
+  pointer-events: auto;
+  z-index: 999;
+  min-width: 150px;
+  color: black;
+  font-size: 16px;
+}
+
+.info-box p {
+  margin-top: 0;
+  margin-bottom: 5px;
+}
+
+.info-box img {
+  width: auto;
+  height: 250px;
+  display: block;
+  cursor: pointer;
+}
+
+.leaflet-control-attribution {
+  display: none !important;
+}
+
+#filterMenu {
+  position: absolute;
+  bottom: 10px;
+  right: 10px;
+  background: rgba(255,255,255,0.7);
+  padding: 10px;
+  border-radius: 5px;
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+  font-size: 14px;
+}
+
+#filterMenu label {
+  margin-bottom: 5px;
+}
+
+#tutorialButton {
+  cursor: pointer;
+  margin-top: 0px;
+}
+
+#tutorialButton:hover {
+  color: #2f89e0;
+  text-decoration: underline;
+}
+
+#tutorialBox {
+  display: none;
+  position: absolute;
+  bottom: 10px;
+  right: 160px;
+  background: white;
+  padding: 10px;
+  border-radius: 5px;
+  width: 250px;
+  z-index: 1001;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+  font-size: 14px;
+}
+
+header {
+  background: #333;
+  padding: 10px 20px;
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  align-items: center;
+}
+
+header a {
+  text-decoration: none;
+}
+
+header button {
+  background: #4da6ff;
+  color: white;
+  border: none;
+  padding: 10px 18px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 16px;
+}
+
+header button:hover {
+  background: #2f89e0;
+}
+
+
+/* Image Viewer */
+
+#imageOverlay {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0,0,0,0.35);
+  z-index: 1999;
+}
+
+#imageViewer {
+  display: none;
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 78.5vw;
+  height: 86.5vh;
+  background: white;
+  z-index: 2000;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.5);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+#imageViewer img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+#closeViewer {
+  position: absolute;
+  top: 8px;
+  right: 12px;
+  font-size: 28px;
+  font-weight: bold;
+  cursor: pointer;
+  color: white;
+  z-index: 2001;
+}
+
+#closeViewer:hover {
+  color: #4da6ff;
+}
+
+#leftArrow,
+#rightArrow {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 60px;
+  font-weight: bold;
+  color: white;
+  cursor: pointer;
+  opacity: 0;
+  transition: opacity 0.2s;
+  user-select: none;
+  z-index: 2001;
+}
+
+#leftArrow {
+  left: 20px;
+}
+
+#rightArrow {
+  right: 20px;
+}
+
+#imageViewer:hover #leftArrow,
+#imageViewer:hover #rightArrow {
+  opacity: 0.6;
+}
+
+#leftArrow:hover,
+#rightArrow:hover {
+  color: #4da6ff;
+  opacity: 1;
+}
+
+</style>
 
 </head>
 
-
 <body>
 
-
 <header>
-
-  <a href="index.html"><button>Home</button></a>
-
-  <a href="matsuya.html"><button>Matsuya</button></a>
-
-  <a href="concerts.html"><button>Concerts</button></a>
-
-  <a href="journeymap.html"><button>JourneyMap</button></a>
-
+<a href="index.html"><button>Home</button></a>
+<a href="matsuya.html"><button>Matsuya</button></a>
+<a href="concerts.html"><button>Concerts</button></a>
+<a href="journeymap.html"><button>JourneyMap</button></a>
 </header>
-
-
 
 <div id="map">
 
-  <div id="filterMenu">
+<div id="filterMenu">
 
-    <label>
-      <input type="checkbox" id="categoryPhotos" checked>
-      Photos
-    </label>
+<label>
+<input type="checkbox" id="categoryPhotos" checked>
+Photos
+</label>
 
+<label>
+<input type="checkbox" id="categoryJourneys" checked>
+Journeys
+</label>
 
-    <label>
-      <input type="checkbox" id="categoryJourneys" checked>
-      Journeys
-    </label>
+<label>
+<input type="checkbox" id="categoryTest" checked>
+Test
+</label>
 
-
-    <label>
-      <input type="checkbox" id="categoryTest" checked>
-      Test
-    </label>
-
-
-  </div>
+<div id="tutorialButton">
+Tutorial
+</div>
 
 </div>
 
+</div>
 
-
+<div id="tutorialBox">
+Click/hover over the pins to view images, click on the images to enlarge!
+</div>
 
 <div id="imageOverlay"></div>
 
-
-
 <div id="imageViewer">
 
-  <span id="closeViewer">×</span>
-
-
-  <span id="leftArrow">‹</span>
-
-
-  <img id="largeImage">
-
-
-  <span id="rightArrow">›</span>
-
+<span id="closeViewer">×</span>
+<span id="leftArrow">‹</span>
+<img id="largeImage">
+<span id="rightArrow">›</span>
 
 </div>
 
-
-
-
 <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
-<script>
 
+<script>
 const map = L.map('map', {
   keyboard: false
 }).setView(
   [36.2048,138.2529],
   5
 );
-
-
 
 L.DomEvent.disableClickPropagation(
   document.getElementById('filterMenu')
@@ -531,651 +296,465 @@ L.DomEvent.disableScrollPropagation(
   document.getElementById('filterMenu')
 );
 
-
-
 L.tileLayer(
-'https://{s}.tile.thunderforest.com/neighbourhood/{z}/{x}/{y}.png?apikey=db5ae1f5778a448ca662554581f283c5',
-{
- attribution:'&copy; OpenStreetMap contributors &copy; Thunderforest'
-}
+  'https://{s}.tile.thunderforest.com/neighbourhood/{z}/{x}/{y}.png?apikey=db5ae1f5778a448ca662554581f283c5',
+  {
+    attribution:'&copy; OpenStreetMap contributors &copy; Thunderforest'
+  }
 ).addTo(map);
-
-
-
 
 
 const markersData = [
-
-{ lat:36.05346958934558, lng:138.1225417013597, text:"Tateishi Park", category:"photos", image:"suwa.jpg" },
-
-{ lat:35.791204919319576, lng:139.87161293483373, text:"Mizumoto Park", category:"photos", image:"mizumoto.jpg" },
-
-{ lat:35.67050302706143, lng:139.54681967899265, text:"Jindai Botanical Gardens", category:"photos", image:"jindai.jpg" },
-
-{ lat:35.18438669070151, lng:139.6462977392656, text:"Miura Kaigan", category:"photos", image:"miurakaigan.png" },
-
-{ lat:32.72937623854756, lng:129.86896707161313, text:"Mt. Nabekanmuri Park", category:"photos", image:"nagasaki.jpg" },
-
-{ lat:41.328373286467674, lng:141.08932565296703, text:"Osorezan Bodaiji", category:"photos", image:"bodaiji.jpg" },
-
-{ lat:35.015904830170825, lng:135.6656124421574, text:"Daihaku Senkoji", category:"photos", image:"senkoji.jpg" },
-
-{ lat:35.25323529186975, lng:135.97471297056364, text:"Kita-Komatsu", category:"photos", image:"kitakomatsu.jpg" },
-
-{ lat:35.88383416313572, lng:139.31337546237563, text:"Kinchakuda", category:"photos", image:"kinchakuda.jpg" },
-
-{ lat:36.40660161579912, lng:140.60035055385845, text:"Hitachi Seaside Park (Autumn)", category:"photos", image:"hitachi_1.jpg" },
-
-{ lat:36.40716554319468, lng:140.59343441293572, text:"Hitachi Seaside Park (Spring)", category:"photos", image:"hitachi_2.jpg" },
-
-{ lat:36.314145641437, lng:139.52002772323175, text:"Ashikaga Flower Park", category:"photos", image:"ashikaga.jpg" },
-
-{ lat:35.48902344726391, lng:136.03733594954906, text:"Metasequoia Avenue", category:"photos", image:"avenue.jpg" },
-
-{ lat:35.427822414178216, lng:136.04273148899696, text:"Katsurahama-enchi", category:"photos", image:"katsurahama.jpg" },
-
-{ lat:34.98537834574205, lng:135.75811838407432, text:"100% Exploration", category:"journeys", image:"avenue.jpg" }
-
+  { lat:36.05346958934558, lng:138.1225417013597, text:"Tateishi Park", category:"photos", image:"suwa.jpg" },
+  { lat:35.791204919319576, lng:139.87161293483373, text:"Mizumoto Park", category:"photos", image:"mizumoto.jpg" },
+  { lat:35.67050302706143, lng:139.54681967899265, text:"Jindai Botanical Gardens", category:"photos", image:"jindai.jpg" },
+  { lat:35.18438669070151, lng:139.6462977392656, text:"Miura Kaigan", category:"photos", image:"miurakaigan.png" },
+  { lat:32.72937623854756, lng:129.86896707161313, text:"Mt. Nabekanmuri Park", category:"photos", image:"nagasaki.jpg" },
+  { lat:41.328373286467674, lng:141.08932565296703, text:"Osorezan Bodaiji", category:"photos", image:"bodaiji.jpg" },
+  { lat:35.015904830170825, lng:135.6656124421574, text:"Daihaku Senkoji", category:"photos", image:"senkoji.jpg" },
+  { lat:35.25323529186975, lng:135.97471297056364, text:"Kita-Komatsu", category:"photos", image:"kitakomatsu.jpg" },
+  { lat:35.88383416313572, lng:139.31337546237563, text:"Kinchakuda", category:"photos", image:"kinchakuda.jpg" },
+  { lat:36.40660161579912, lng:140.60035055385845, text:"Hitachi Seaside Park (Autumn)", category:"photos", image:"hitachi_1.jpg" },
+  { lat:36.40716554319468, lng:140.59343441293572, text:"Hitachi Seaside Park (Spring)", category:"photos", image:"hitachi_2.jpg" },
+  { lat:36.314145641437, lng:139.52002772323175, text:"Ashikaga Flower Park", category:"photos", image:"ashikaga.jpg" },
+  { lat:35.48902344726391, lng:136.03733594954906, text:"Metasequoia Avenue", category:"photos", image:"avenue.jpg" },
+  { lat:35.427822414178216, lng:136.04273148899696, text:"Katsurahama-enchi", category:"photos", image:"katsurahama.jpg" },
+  { lat:34.98537834574205, lng:135.75811838407432, text:"100% Exploration", category:"journeys", image:"avenue.jpg" }
 ];
 
 
-
-
-
 let markers = [];
-
 let currentInfoBox = null;
 
-
-
-// Gallery data
-
 let imageList = [];
-
 let currentImageIndex = 0;
 
 
+markersData.forEach(markerData => {
+
+  imageList.push({
+    image: markerData.image,
+    title: markerData.text
+  });
 
 
+  const div = document.createElement("div");
+  div.className = "custom-marker";
 
-markersData.forEach(markerData=>{
+
+  if(markerData.category === "journeys"){
+    div.style.backgroundColor = "#4da6ff";
+  }
 
 
-imageList.push({
+  const icon = L.divIcon({
+    className:"",
+    html:div.outerHTML,
+    iconSize:[20,20],
+    iconAnchor:[10,10]
+  });
 
- image:markerData.image,
 
- title:markerData.text
+  const marker = L.marker(
+    [markerData.lat, markerData.lng],
+    {icon:icon}
+  ).addTo(map);
+
+
+  const infoBox = document.createElement("div");
+
+  infoBox.className = "info-box";
+
+  infoBox.innerHTML = `
+    <p>${markerData.text}</p>
+    <img src="${markerData.image}" alt="${markerData.text}">
+  `;
+
+
+  document.getElementById("map").appendChild(infoBox);
+
+
+  marker.category = markerData.category;
+  markers.push(marker);
+
+
+  const updateInfoBoxPosition = () => {
+
+    const pos = map.latLngToContainerPoint(
+      marker.getLatLng()
+    );
+
+    infoBox.style.left =
+      `${pos.x - (infoBox.offsetWidth / 2)}px`;
+
+    infoBox.style.top =
+      `${pos.y + 8}px`;
+
+  };
+
+
+  marker.on("mouseover", () => {
+
+    infoBox.style.display = "block";
+
+    updateInfoBoxPosition();
+
+  });
+
+
+  marker.on("mouseout", () => {
+
+    if(currentInfoBox !== infoBox){
+
+      infoBox.style.display = "none";
+
+    }
+
+  });
+
+
+  marker.on("click", (e) => {
+
+    e.originalEvent.stopPropagation();
+
+
+    if(currentInfoBox){
+
+      currentInfoBox.style.display = "none";
+
+    }
+
+
+    currentInfoBox = infoBox;
+
+    updateInfoBoxPosition();
+
+    infoBox.style.display = "block";
+
+  });
+
+
+  map.on("move zoom zoomstart", () => {
+
+    if(currentInfoBox === infoBox){
+
+      updateInfoBoxPosition();
+
+    }
+
+  });
 
 });
 
 
+map.on("click", () => {
 
+  currentInfoBox = null;
 
-const div=document.createElement("div");
+  document.querySelectorAll(".info-box")
+    .forEach(box => {
 
-div.className="custom-marker";
+      box.style.display = "none";
 
-
-
-if(markerData.category==="journeys"){
-
- div.style.backgroundColor="#4da6ff";
-
-}
-
-
-
-const icon=L.divIcon({
-
- className:"",
-
- html:div.outerHTML,
-
- iconSize:[20,20],
-
- iconAnchor:[10,10]
+    });
 
 });
-
-
-
-
-
-const marker=L.marker(
-
-[markerData.lat,markerData.lng],
-
-{icon:icon}
-
-).addTo(map);
-
-
-
-
-
-const infoBox=document.createElement("div");
-
-infoBox.className="info-box";
-
-
-
-infoBox.innerHTML=`
-
-<p>${markerData.text}</p>
-
-<img src="${markerData.image}" alt="${markerData.text}">
-
-`;
-
-
-
-
-
-document.getElementById("map").appendChild(infoBox);
-
-
-
-marker.category=markerData.category;
-
-markers.push(marker);
-
-
-
-
-
-const updateInfoBoxPosition=()=>{
-
-
-const pos =
-map.latLngToContainerPoint(
-marker.getLatLng()
-);
-
-
-infoBox.style.left =
-`${pos.x-(infoBox.offsetWidth/2)}px`;
-
-
-infoBox.style.top =
-`${pos.y+8}px`;
-
-
-};
-
-
-
-
-
-marker.on("mouseover",()=>{
-
-
-infoBox.style.display="block";
-
-updateInfoBoxPosition();
-
-
-});
-
-
-
-
-
-marker.on("mouseout",()=>{
-
-
-if(currentInfoBox!==infoBox){
-
-infoBox.style.display="none";
-
-}
-
-});
-
-
-
-
-
-marker.on("click",(e)=>{
-
-
-e.originalEvent.stopPropagation();
-
-
-
-if(currentInfoBox){
-
-currentInfoBox.style.display="none";
-
-}
-
-
-
-currentInfoBox=infoBox;
-
-
-updateInfoBoxPosition();
-
-
-infoBox.style.display="block";
-
-
-});
-
-
-
-
-
-map.on("move zoom zoomstart",()=>{
-
-
-if(currentInfoBox===infoBox){
-
-updateInfoBoxPosition();
-
-}
-
-
-});
-
-
-
-});
-
-
-
-
-
-
-map.on("click",()=>{
-
-
-currentInfoBox=null;
-
-
-document.querySelectorAll(".info-box")
-.forEach(box=>{
-
-box.style.display="none";
-
-});
-
-
-});
-
-
-
-
-
-
-
-
 // =======================
 // IMAGE VIEWER
 // =======================
 
-
 const imageViewer =
-document.getElementById("imageViewer");
-
+  document.getElementById("imageViewer");
 
 const imageOverlay =
-document.getElementById("imageOverlay");
-
+  document.getElementById("imageOverlay");
 
 const largeImage =
-document.getElementById("largeImage");
-
+  document.getElementById("largeImage");
 
 const closeViewer =
-document.getElementById("closeViewer");
-
+  document.getElementById("closeViewer");
 
 const leftArrow =
-document.getElementById("leftArrow");
-
+  document.getElementById("leftArrow");
 
 const rightArrow =
-document.getElementById("rightArrow");
-
-
-
-
-
+  document.getElementById("rightArrow");
 
 
 function showImage(){
 
-
-largeImage.src =
-imageList[currentImageIndex].image;
-
+  largeImage.src =
+    imageList[currentImageIndex].image;
 
 }
-
-
-
-
-
-
 
 
 document.addEventListener("click",(e)=>{
 
+  if(
+    e.target.tagName==="IMG" &&
+    e.target.closest(".info-box")
+  ){
 
-if(
-e.target.tagName==="IMG" &&
-e.target.closest(".info-box")
-){
-
-
-const filename =
-e.target.src.split("/").pop();
+    const filename =
+      e.target.src.split("/").pop();
 
 
-
-currentImageIndex =
-imageList.findIndex(
-item=>item.image===filename
-);
-
+    currentImageIndex =
+      imageList.findIndex(
+        item=>item.image===filename
+      );
 
 
-showImage();
+    showImage();
 
+    imageViewer.style.display="block";
 
-imageViewer.style.display="block";
+    imageOverlay.style.display="block";
 
-imageOverlay.style.display="block";
-
-
-}
-
+  }
 
 });
-
-
-
-
-
-
 
 
 rightArrow.addEventListener("click",(e)=>{
 
+  e.stopPropagation();
 
-e.stopPropagation();
-
-
-currentImageIndex++;
+  currentImageIndex++;
 
 
-if(currentImageIndex>=imageList.length){
+  if(currentImageIndex >= imageList.length){
 
-currentImageIndex=0;
+    currentImageIndex = 0;
 
-}
+  }
 
 
-showImage();
-
+  showImage();
 
 });
-
-
-
-
-
 
 
 leftArrow.addEventListener("click",(e)=>{
 
+  e.stopPropagation();
 
-e.stopPropagation();
-
-
-currentImageIndex--;
+  currentImageIndex--;
 
 
-if(currentImageIndex<0){
+  if(currentImageIndex < 0){
 
-currentImageIndex=imageList.length-1;
+    currentImageIndex = imageList.length - 1;
 
-}
+  }
 
 
-showImage();
-
+  showImage();
 
 });
-
-
-
-
-
-
 
 
 // Keyboard controls
 
-
 document.addEventListener("keydown",(e)=>{
 
+  if(imageViewer.style.display !== "block"){
 
-if(imageViewer.style.display!=="block"){
+    return;
 
-return;
-
-}
-
+  }
 
 
-if(e.key==="ArrowRight"){
+  if(e.key === "ArrowRight"){
+
+    currentImageIndex++;
 
 
-currentImageIndex++;
+    if(currentImageIndex >= imageList.length){
+
+      currentImageIndex = 0;
+
+    }
 
 
-if(currentImageIndex>=imageList.length){
+    showImage();
 
-currentImageIndex=0;
-
-}
-
-
-showImage();
-
-
-}
+  }
 
 
 
+  if(e.key === "ArrowLeft"){
 
-if(e.key==="ArrowLeft"){
-
-
-currentImageIndex--;
+    currentImageIndex--;
 
 
-if(currentImageIndex<0){
+    if(currentImageIndex < 0){
 
-currentImageIndex=imageList.length-1;
+      currentImageIndex = imageList.length - 1;
 
-}
-
-
-showImage();
+    }
 
 
-}
+    showImage();
+
+  }
 
 
 
+  if(e.key === "Escape"){
 
+    imageViewer.style.display="none";
 
-if(e.key==="Escape"){
+    imageOverlay.style.display="none";
 
-
-imageViewer.style.display="none";
-
-imageOverlay.style.display="none";
-
-
-}
-
-
+  }
 
 });
-
-
-
-
 
 
 
 closeViewer.addEventListener("click",()=>{
 
+  imageViewer.style.display="none";
 
-imageViewer.style.display="none";
-
-imageOverlay.style.display="none";
-
+  imageOverlay.style.display="none";
 
 });
-
-
-
-
-
 
 
 
 imageOverlay.addEventListener("click",()=>{
 
+  imageViewer.style.display="none";
 
-imageViewer.style.display="none";
-
-imageOverlay.style.display="none";
-
+  imageOverlay.style.display="none";
 
 });
-
-
-
-
 
 
 
 largeImage.addEventListener("click",(e)=>{
 
-
-e.stopPropagation();
-
+  e.stopPropagation();
 
 });
 
 
 
-
-
-
-
-
-
 // =======================
-// CATEGORY FILTERING	
+// TUTORIAL
 // =======================
 
+const tutorialButton =
+  document.getElementById("tutorialButton");
+
+const tutorialBox =
+  document.getElementById("tutorialBox");
+
+
+tutorialButton.addEventListener("click",(e)=>{
+
+  e.stopPropagation();
+
+  if(tutorialBox.style.display === "block"){
+
+    tutorialBox.style.display="none";
+
+  }
+
+  else{
+
+    tutorialBox.style.display="block";
+
+  }
+
+});
+
+
+tutorialBox.addEventListener("click",(e)=>{
+
+  e.stopPropagation();
+
+});
+
+
+document.addEventListener("click",()=>{
+
+  tutorialBox.style.display="none";
+
+});
+// =======================
+// CATEGORY FILTERING
+// =======================
 
 function updateMarkerVisibility(){
 
-
-const hidePhotos =
-!document.getElementById("categoryPhotos").checked;
-
+  const hidePhotos =
+    !document.getElementById("categoryPhotos").checked;
 
 
-const hideJourneys =
-!document.getElementById("categoryJourneys").checked;
+  const hideJourneys =
+    !document.getElementById("categoryJourneys").checked;
 
 
-
-const hideTest =
-!document.getElementById("categoryTest").checked;
+  const hideTest =
+    !document.getElementById("categoryTest").checked;
 
 
 
+  markers.forEach(marker=>{
 
+    if(
 
-markers.forEach(marker=>{
+      (hidePhotos && marker.category==="photos") ||
 
+      (hideJourneys && marker.category==="journeys") ||
 
-if(
+      (hideTest && marker.category==="test")
 
-(hidePhotos && marker.category==="photos") ||
+    ){
 
-(hideJourneys && marker.category==="journeys") ||
+      map.removeLayer(marker);
 
-(hideTest && marker.category==="test")
+    }
 
-){
+    else{
 
+      marker.addTo(map);
 
-map.removeLayer(marker);
+    }
 
-
-}
-
-else{
-
-
-marker.addTo(map);
-
+  });
 
 }
-
-
-
-});
-
-
-}
-
-
-
-
 
 
 
 document.getElementById("categoryPhotos")
 .addEventListener(
-"change",
-updateMarkerVisibility
+  "change",
+  updateMarkerVisibility
 );
-
 
 
 document.getElementById("categoryJourneys")
 .addEventListener(
-"change",
-updateMarkerVisibility
+  "change",
+  updateMarkerVisibility
 );
-
 
 
 document.getElementById("categoryTest")
 .addEventListener(
-"change",
-updateMarkerVisibility
+  "change",
+  updateMarkerVisibility
 );
 
 
 
-
-
 updateMarkerVisibility();
-
-
 
 </script>
 
