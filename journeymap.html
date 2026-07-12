@@ -41,7 +41,7 @@
 
     #map {
       width: 1200px;
-      height: 700px;
+      height: 600px;
       border: 1px solid black;
       margin: 30px auto;
       position: relative;
@@ -133,6 +133,9 @@ const routes = [
 
 const layers = [];
 const routeMenu = document.getElementById("routeMenu");
+
+L.DomEvent.disableClickPropagation(routeMenu);
+L.DomEvent.disableScrollPropagation(routeMenu);
 routes.forEach((route, index) => {
 
   // Load GPX
