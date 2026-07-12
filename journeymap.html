@@ -3,16 +3,18 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>JourneyMap</title>
+  <title>Journey Map</title>
 
   <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css"/>
 
   <style>
+
     body {
       font-family: Arial, sans-serif;
       margin: 0;
       background: white;
     }
+
 
     header {
       background: #333;
@@ -22,9 +24,11 @@
       justify-content: center;
     }
 
+
     header a {
       text-decoration: none;
     }
+
 
     header button {
       background: #4da6ff;
@@ -36,9 +40,11 @@
       font-size: 16px;
     }
 
+
     header button:hover {
       background: #2f89e0;
     }
+
 
     #map {
       width: 1200px;
@@ -48,86 +54,142 @@
       position: relative;
     }
 
+
     .leaflet-control-attribution {
       display: none !important;
     }
 
 
+
     #routeMenu {
+
       position: absolute;
+
       bottom: 10px;
+
       right: 10px;
+
 
       background: rgba(255,255,255,0.9);
 
       padding: 10px;
+
       border-radius: 6px;
 
       z-index: 1000;
 
+
       display: flex;
+
       flex-direction: column;
 
+
       max-height: 350px;
+
       overflow-y: auto;
 
+
       font-size: 14px;
+
     }
+
+
 
 
     #routeMenu label {
+
       margin-bottom: 6px;
+
       cursor: pointer;
+
       user-select: none;
+
       white-space: nowrap;
+
     }
+
+
 
 
     #routeMenu span {
+
       cursor: pointer;
+
       color: #0056b3;
+
     }
+
 
 
     #routeMenu span:hover {
+
       color: #003d80;
+
       text-decoration: underline;
+
     }
+
+
 
 
     .playButton {
+
       margin-left: 8px;
+
       cursor: pointer;
+
       color: #008000;
+
       font-weight: bold;
+
     }
+
+
 
 
     .playButton:hover {
+
       color: #004d00;
+
       text-decoration: underline;
+
     }
 
+
   </style>
+
 </head>
 
 
 <body>
 
 
+
 <header>
+
   <a href="index.html"><button>Home</button></a>
+
   <a href="matsuya.html"><button>Matsuya</button></a>
+
   <a href="concerts.html"><button>Concerts</button></a>
+
   <a href="routes.html"><button>JourneyMap</button></a>
+
 </header>
+
+
 
 
 <div id="map">
 
+
   <div id="routeMenu"></div>
 
+
 </div>
+
+
+
 
 
 <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
@@ -135,86 +197,136 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet-gpx/1.7.0/gpx.min.js"></script>
 
 
+
+
+
 <script>
 
 
+
 const map = L.map('map').setView(
+
   [36.2048,138.2529],
+
   5
+
 );
 
 
 
+
+
 L.tileLayer(
+
 'https://{s}.tile.thunderforest.com/neighbourhood/{z}/{x}/{y}.png?apikey=db5ae1f5778a448ca662554581f283c5',
+
 {
+
  attribution:'&copy; OpenStreetMap contributors &copy; Thunderforest'
+
 }
+
 ).addTo(map);
+
+
 
 
 
 // GPX ROUTES
 
+
 const routes = [
 
+
 {
+
  name:"Tsurumi",
+
  file:"tsurumi.gpx",
+
  color:"#ff0000"
+
 },
 
+
 {
+
  name:"Kamakura",
+
  file:"gpx/kamakura.gpx",
+
  color:"#009900"
+
 },
 
+
 {
+
  name:"Lake Suwa",
+
  file:"gpx/lake-suwa.gpx",
+
  color:"#0066ff"
+
 }
+
 
 ];
 
 
 
+
+
 const routeMenu =
+
 document.getElementById("routeMenu");
+
+
 
 
 
 // Animation speed control
 
+
 const speedLabel = document.createElement("label");
 
-speedLabel.style.marginTop = "2px";
 
 speedLabel.innerHTML = `
+
   Play Route in:
-  <input 
+
+  <input
+
     id="animationSpeed"
+
     type="number"
+
     value="10"
+
     min="1"
+
     max="300"
+
     style="width:50px;"
+
   >
+
   Seconds
+
 `;
 
 
 
-// Store route information
+
 
 const routeObjects = [];
 
 
 
-// Prevent menu clicks from affecting map
+
 
 L.DomEvent.disableClickPropagation(routeMenu);
+
 L.DomEvent.disableScrollPropagation(routeMenu);
 // Load each GPX route
 
@@ -226,6 +338,8 @@ routes.forEach((route, index) => {
     layer: null,
 
     animationLayer: null,
+
+    animationFrame: null,
 
     coordinates: [],
 
@@ -240,12 +354,16 @@ routes.forEach((route, index) => {
 
 
 
+
+
   const layer = new L.GPX(route.file, {
+
 
     async: true,
 
 
     polyline_options: {
+
 
       color: route.color,
 
@@ -253,16 +371,19 @@ routes.forEach((route, index) => {
 
       opacity: 0.9
 
+
     },
 
 
     marker_options: {
+
 
       startIconUrl: null,
 
       endIconUrl: null,
 
       shadowUrl: null
+
 
     }
 
@@ -271,9 +392,14 @@ routes.forEach((route, index) => {
 
 
 
+
+
   routeData.layer = layer;
 
 
+
+
+  // Tooltip for original route
 
   layer.bindTooltip(route.name, {
 
@@ -285,14 +411,22 @@ routes.forEach((route, index) => {
 
 
 
+
+
   layer.addTo(map);
 
 
 
 
-  // Create route checkbox
+
+
+
+  // Create route menu item
+
 
   const label = document.createElement("label");
+
+
 
 
 
@@ -306,10 +440,14 @@ routes.forEach((route, index) => {
 
 
 
+
+
   const text = document.createElement("span");
 
 
   text.textContent = " " + route.name;
+
+
 
 
 
@@ -319,15 +457,21 @@ routes.forEach((route, index) => {
   play.className = "playButton";
 
 
-  play.textContent = "[Play]";
+  play.textContent = " [Play]";
 
 
 
-  // Checkbox and route name stay together
+
 
   label.appendChild(checkbox);
 
+
   label.appendChild(text);
+
+
+  label.appendChild(play);
+
+
 
 
 
@@ -335,15 +479,12 @@ routes.forEach((route, index) => {
 
 
 
-  // Play button is outside the label
-
-  routeMenu.appendChild(play);
-
 
 
 
 
   // Clicking route name zooms to route
+
 
   text.addEventListener("click",(e)=>{
 
@@ -378,7 +519,10 @@ routes.forEach((route, index) => {
 
 
 
+
+
   // Prevent checkbox click from affecting map
+
 
   checkbox.addEventListener("click",(e)=>{
 
@@ -392,18 +536,25 @@ routes.forEach((route, index) => {
 
 
 
-  // Show/hide original GPX route
+
+
+  // Show / hide original route
+
 
   checkbox.addEventListener("change",()=>{
+
 
 
     if(checkbox.checked){
 
 
+
       layer.addTo(map);
 
 
+
       routeData.visible = true;
+
 
 
     }
@@ -411,10 +562,52 @@ routes.forEach((route, index) => {
     else{
 
 
+
       map.removeLayer(layer);
 
 
+
       routeData.visible = false;
+
+
+
+
+
+      // Stop animation if running
+
+
+      if(routeData.animationFrame){
+
+
+        cancelAnimationFrame(routeData.animationFrame);
+
+
+        routeData.animationFrame = null;
+
+
+      }
+
+
+
+
+      // Remove animation line
+
+
+      if(routeData.animationLayer){
+
+
+        map.removeLayer(routeData.animationLayer);
+
+
+        routeData.animationLayer = null;
+
+
+      }
+
+
+
+      routeData.playing = false;
+
 
 
     }
@@ -427,15 +620,21 @@ routes.forEach((route, index) => {
 
 
 
-  // GPX loaded
+
+
+  // Load GPX coordinates
+
 
   layer.on("loaded",(e)=>{
+
 
 
     routeData.coordinates =
 
       e.target.getLayers()[0]
       .getLatLngs();
+
+
 
 
 
@@ -466,14 +665,19 @@ routes.forEach((route, index) => {
 
 
 
-  // PLAY BUTTON
+
+  // Play button
+
 
   play.addEventListener("click",(e)=>{
 
 
+
     e.preventDefault();
 
+
     e.stopPropagation();
+
 
 
 
@@ -492,7 +696,10 @@ routes.forEach((route, index) => {
 
 
 
+
+
     // If unchecked, enable checkbox
+
 
     if(!checkbox.checked){
 
@@ -508,7 +715,10 @@ routes.forEach((route, index) => {
 
 
 
-    // Hide original GPX without changing checkbox
+
+
+    // Hide original route while animation plays
+
 
     if(map.hasLayer(layer)){
 
@@ -517,6 +727,8 @@ routes.forEach((route, index) => {
 
 
     }
+
+
 
 
 
@@ -536,6 +748,7 @@ routeMenu.appendChild(speedLabel);
 
 
 const speedInput = document.getElementById("animationSpeed");
+
 
 
 speedInput.addEventListener("input",()=>{
@@ -564,12 +777,14 @@ speedInput.addEventListener("input",()=>{
 
 
 
+
 // Animate route from start to finish
 
 function animateRoute(routeData, route){
 
 
-  // Remove previous animation if it exists
+
+  // Remove previous animation
 
   if(routeData.animationLayer){
 
@@ -584,8 +799,24 @@ function animateRoute(routeData, route){
 
 
 
+  if(routeData.animationFrame){
+
+
+    cancelAnimationFrame(routeData.animationFrame);
+
+
+    routeData.animationFrame = null;
+
+
+  }
+
+
+
+
+
 
   routeData.playing = true;
+
 
 
 
@@ -611,7 +842,6 @@ function animateRoute(routeData, route){
 
 
 
-  // Hover name for animated route
 
   animatedLine.bindTooltip(route.name, {
 
@@ -625,7 +855,10 @@ function animateRoute(routeData, route){
 
 
 
+
   routeData.animationLayer = animatedLine;
+
+
 
 
 
@@ -635,6 +868,7 @@ function animateRoute(routeData, route){
 
 
   let startTime = null;
+
 
 
 
@@ -649,7 +883,9 @@ function animateRoute(routeData, route){
 
 
 
+
   function animate(timestamp){
+
 
 
     if(!startTime){
@@ -664,9 +900,11 @@ function animateRoute(routeData, route){
 
 
 
+
     const elapsed =
 
       timestamp - startTime;
+
 
 
 
@@ -701,7 +939,6 @@ function animateRoute(routeData, route){
 
 
 
-
     animatedLine.setLatLngs(
 
       points.slice(
@@ -720,10 +957,15 @@ function animateRoute(routeData, route){
 
 
 
+
     if(progress < 1){
 
 
-      requestAnimationFrame(animate);
+
+      routeData.animationFrame =
+
+        requestAnimationFrame(animate);
+
 
 
     }
@@ -731,7 +973,12 @@ function animateRoute(routeData, route){
     else{
 
 
+
       routeData.playing = false;
+
+
+      routeData.animationFrame = null;
+
 
 
     }
@@ -745,15 +992,17 @@ function animateRoute(routeData, route){
 
 
 
-  // Always restart animation from the beginning
+  // Start from beginning
+
 
   animatedLine.setLatLngs([]);
 
 
 
 
+  routeData.animationFrame =
 
-  requestAnimationFrame(animate);
+    requestAnimationFrame(animate);
 
 
 
@@ -764,7 +1013,8 @@ function animateRoute(routeData, route){
 
 
 
-// Prevent menu interactions from moving the map
+
+// Prevent menu interactions from moving map
 
 routeMenu.addEventListener(
 
@@ -786,4 +1036,5 @@ routeMenu.addEventListener(
 
 
 </body>
+
 </html>
