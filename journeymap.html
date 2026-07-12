@@ -623,28 +623,9 @@ layer.on("loaded",(e)=>{
 
 
 
-let layers=e.target.getLayers();
-
-
-
-for(let i=0;i<layers.length;i++){
-
-
-if(typeof layers[i].getLatLngs==="function"){
-
-
-routeData.coordinates =
-flattenCoordinates(
-layers[i].getLatLngs()
+routeData.gpxLayer = e.target.getLayers().find(
+    layer => typeof layer.getLatLngs === "function"
 );
-
-
-break;
-
-
-}
-
-}
 
 
 
