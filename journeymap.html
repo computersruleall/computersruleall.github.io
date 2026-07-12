@@ -46,119 +46,185 @@
     }
 
 
+
+
     #map {
+
       width: 1200px;
+
       height: 600px;
+
       border: 1px solid black;
+
       margin: 15px auto;
+
       position: relative;
+
     }
+
+
 
 
     .leaflet-control-attribution {
+
       display: none !important;
+
     }
+
+
+
 
 
 
     #routeMenu {
 
+
       position: absolute;
 
+
       bottom: 10px;
+
 
       right: 10px;
 
 
+
       background: rgba(255,255,255,0.9);
+
+
 
       padding: 10px;
 
+
+
       border-radius: 6px;
+
+
 
       z-index: 1000;
 
 
+
       display: flex;
+
+
 
       flex-direction: column;
 
 
+
       max-height: 350px;
+
+
 
       overflow-y: auto;
 
 
+
       font-size: 14px;
 
+
     }
+
+
+
 
 
 
 
     #routeMenu label {
 
+
       margin-bottom: 6px;
+
 
       cursor: pointer;
 
+
       user-select: none;
+
 
       white-space: nowrap;
 
+
     }
+
+
 
 
 
 
     #routeMenu span {
 
+
       cursor: pointer;
+
 
       color: #0056b3;
 
+
     }
+
+
+
 
 
 
     #routeMenu span:hover {
 
+
       color: #003d80;
+
 
       text-decoration: underline;
 
+
     }
+
+
 
 
 
 
     .playButton {
 
+
       margin-left: 8px;
+
 
       cursor: pointer;
 
+
       color: #008000;
+
 
       font-weight: bold;
 
+
     }
+
+
 
 
 
 
     .playButton:hover {
 
+
       color: #004d00;
+
 
       text-decoration: underline;
 
+
     }
+
 
 
   </style>
 
 </head>
+
 
 
 <body>
@@ -176,6 +242,7 @@
   <a href="routes.html"><button>JourneyMap</button></a>
 
 </header>
+
 
 
 
@@ -232,7 +299,11 @@ L.tileLayer(
 
 
 
+
+
 // GPX ROUTES
+
+// Files are located in the same folder as routes.html
 
 
 const routes = [
@@ -277,9 +348,13 @@ const routes = [
 
 
 
+
+
 const routeMenu =
 
 document.getElementById("routeMenu");
+
+
 
 
 
@@ -289,6 +364,11 @@ document.getElementById("routeMenu");
 
 
 const speedLabel = document.createElement("label");
+
+
+
+speedLabel.style.marginTop = "2px";
+
 
 
 speedLabel.innerHTML = `
@@ -319,6 +399,7 @@ speedLabel.innerHTML = `
 
 
 
+
 const routeObjects = [];
 
 
@@ -326,6 +407,7 @@ const routeObjects = [];
 
 
 L.DomEvent.disableClickPropagation(routeMenu);
+
 
 L.DomEvent.disableScrollPropagation(routeMenu);
 // Load each GPX route
@@ -356,6 +438,7 @@ routes.forEach((route, index) => {
 
 
 
+
   const layer = new L.GPX(route.file, {
 
 
@@ -364,26 +447,22 @@ routes.forEach((route, index) => {
 
     polyline_options: {
 
-
       color: route.color,
 
       weight: 4,
 
       opacity: 0.9
 
-
     },
 
 
     marker_options: {
-
 
       startIconUrl: null,
 
       endIconUrl: null,
 
       shadowUrl: null
-
 
     }
 
@@ -394,12 +473,14 @@ routes.forEach((route, index) => {
 
 
 
+
   routeData.layer = layer;
 
 
 
 
-  // Tooltip for original route
+
+  // Tooltip for original GPX line
 
   layer.bindTooltip(route.name, {
 
@@ -421,7 +502,8 @@ routes.forEach((route, index) => {
 
 
 
-  // Create route menu item
+
+  // Create menu item
 
 
   const label = document.createElement("label");
@@ -463,6 +545,7 @@ routes.forEach((route, index) => {
 
 
 
+
   label.appendChild(checkbox);
 
 
@@ -483,7 +566,8 @@ routes.forEach((route, index) => {
 
 
 
-  // Clicking route name zooms to route
+
+  // Click route name = zoom to route
 
 
   text.addEventListener("click",(e)=>{
@@ -520,9 +604,7 @@ routes.forEach((route, index) => {
 
 
 
-
-  // Prevent checkbox click from affecting map
-
+  // Prevent checkbox click moving map
 
   checkbox.addEventListener("click",(e)=>{
 
@@ -538,11 +620,10 @@ routes.forEach((route, index) => {
 
 
 
-  // Show / hide original route
+  // Show / hide route
 
 
   checkbox.addEventListener("change",()=>{
-
 
 
     if(checkbox.checked){
@@ -550,7 +631,6 @@ routes.forEach((route, index) => {
 
 
       layer.addTo(map);
-
 
 
       routeData.visible = true;
@@ -566,14 +646,13 @@ routes.forEach((route, index) => {
       map.removeLayer(layer);
 
 
-
       routeData.visible = false;
 
 
 
 
 
-      // Stop animation if running
+      // Stop animation if checkbox disabled mid-play
 
 
       if(routeData.animationFrame){
@@ -590,8 +669,6 @@ routes.forEach((route, index) => {
 
 
 
-      // Remove animation line
-
 
       if(routeData.animationLayer){
 
@@ -603,6 +680,7 @@ routes.forEach((route, index) => {
 
 
       }
+
 
 
 
@@ -622,7 +700,7 @@ routes.forEach((route, index) => {
 
 
 
-  // Load GPX coordinates
+  // GPX finished loading
 
 
   layer.on("loaded",(e)=>{
@@ -633,6 +711,7 @@ routes.forEach((route, index) => {
 
       e.target.getLayers()[0]
       .getLatLngs();
+
 
 
 
@@ -672,11 +751,11 @@ routes.forEach((route, index) => {
   play.addEventListener("click",(e)=>{
 
 
-
     e.preventDefault();
 
 
     e.stopPropagation();
+
 
 
 
@@ -698,8 +777,32 @@ routes.forEach((route, index) => {
 
 
 
-    // If unchecked, enable checkbox
+    // Snap camera to route
 
+    if(layer.getBounds().isValid()){
+
+
+      map.fitBounds(
+
+        layer.getBounds(),
+
+        {
+
+          padding:[40,40]
+
+        }
+
+      );
+
+
+    }
+
+
+
+
+
+
+    // If unchecked, enable it
 
     if(!checkbox.checked){
 
@@ -717,8 +820,7 @@ routes.forEach((route, index) => {
 
 
 
-    // Hide original route while animation plays
-
+    // Hide original GPX without changing checkbox
 
     if(map.hasLayer(layer)){
 
@@ -740,14 +842,27 @@ routes.forEach((route, index) => {
   });
 
 
+
 });
-// Add animation speed control underneath routes
+
+
+
+
+
+
+
+
+// Add speed control below routes
 
 routeMenu.appendChild(speedLabel);
 
 
 
+
+
 const speedInput = document.getElementById("animationSpeed");
+
+
 
 
 
@@ -756,16 +871,22 @@ speedInput.addEventListener("input",()=>{
 
   if(speedInput.value < 1){
 
+
     speedInput.value = 1;
 
+
   }
+
 
 
   if(speedInput.value > 300){
 
+
     speedInput.value = 300;
 
+
   }
+
 
 
   speedInput.value = Math.floor(speedInput.value);
@@ -778,13 +899,13 @@ speedInput.addEventListener("input",()=>{
 
 
 
-// Animate route from start to finish
+
+
+// Animate route
 
 function animateRoute(routeData, route){
 
 
-
-  // Remove previous animation
 
   if(routeData.animationLayer){
 
@@ -792,10 +913,9 @@ function animateRoute(routeData, route){
     map.removeLayer(routeData.animationLayer);
 
 
-    routeData.animationLayer = null;
-
-
   }
+
+
 
 
 
@@ -805,17 +925,7 @@ function animateRoute(routeData, route){
     cancelAnimationFrame(routeData.animationFrame);
 
 
-    routeData.animationFrame = null;
-
-
   }
-
-
-
-
-
-
-  routeData.playing = true;
 
 
 
@@ -845,9 +955,9 @@ function animateRoute(routeData, route){
 
   animatedLine.bindTooltip(route.name, {
 
-    sticky: true,
+    sticky:true,
 
-    direction: "top"
+    direction:"top"
 
   });
 
@@ -862,21 +972,17 @@ function animateRoute(routeData, route){
 
 
 
-
   const points = routeData.coordinates;
-
-
-
-  let startTime = null;
-
-
 
 
 
   const duration =
 
-    Number(document.getElementById("animationSpeed").value) * 1000;
+    Number(speedInput.value) * 1000;
 
+
+
+  let startTime = null;
 
 
 
@@ -901,24 +1007,13 @@ function animateRoute(routeData, route){
 
 
 
-    const elapsed =
+    const progress = Math.min(
 
-      timestamp - startTime;
+      (timestamp - startTime) / duration,
 
+      1
 
-
-
-
-
-    const progress =
-
-      Math.min(
-
-        elapsed / duration,
-
-        1
-
-      );
+    );
 
 
 
@@ -926,13 +1021,12 @@ function animateRoute(routeData, route){
 
 
 
-    const currentIndex =
+    const currentIndex = Math.floor(
 
-      Math.floor(
+      progress * (points.length - 1)
 
-        progress * (points.length - 1)
+    );
 
-      );
 
 
 
@@ -957,7 +1051,6 @@ function animateRoute(routeData, route){
 
 
 
-
     if(progress < 1){
 
 
@@ -974,10 +1067,10 @@ function animateRoute(routeData, route){
 
 
 
-      routeData.playing = false;
-
-
       routeData.animationFrame = null;
+
+
+      routeData.playing = false;
 
 
 
@@ -987,15 +1080,6 @@ function animateRoute(routeData, route){
   }
 
 
-
-
-
-
-
-  // Start from beginning
-
-
-  animatedLine.setLatLngs([]);
 
 
 
@@ -1014,7 +1098,7 @@ function animateRoute(routeData, route){
 
 
 
-// Prevent menu interactions from moving map
+// Prevent menu clicks affecting map
 
 routeMenu.addEventListener(
 
