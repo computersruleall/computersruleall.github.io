@@ -1,260 +1,158 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>JourneyMap</title>
-
-  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css"/>
-
-  <style>
-
-    html, body {
-      margin: 0;
-      padding: 0;
-      width: 100%;
-      overflow-x: hidden;
-    }
-
-
-    body {
-      font-family: Arial, sans-serif;
-      background: white;
-    }
-
-
-
-    header {
-      width: 100%;
-      box-sizing: border-box;
-      background: #333;
-      padding: 10px 20px;
-      display: flex;
-      gap: 10px;
-      justify-content: center;
-      align-items: center;
-      flex-wrap: wrap;
-    }
-
-
-
-    header a {
-      text-decoration: none;
-    }
-
-
-
-    header button {
-      background: #4da6ff;
-      color: white;
-      border: none;
-      padding: 10px 18px;
-      border-radius: 5px;
-      cursor: pointer;
-      font-size: 16px;
-    }
-
-
-
-    header button:hover {
-      background: #2f89e0;
-    }
-
-
-
-    #map {
-
-      width: min(1200px, 78.5vw);
-      height: min(600px, 86.5vh);
-
-      border: 1px solid black;
-
-      margin: 15px auto;
-
-      position: relative;
-
-    }
-
-
-
-    .leaflet-control-attribution {
-      display: none !important;
-    }
-
-
-
-
-
-    #routeMenu {
-
-      position: absolute;
-
-      bottom: 10px;
-
-      right: 10px;
-
-
-      background: rgba(255,255,255,0.9);
-
-
-      padding: 10px;
-
-      border-radius: 6px;
-
-
-      z-index: 1000;
-
-
-      display: flex;
-
-      flex-direction: column;
-
-
-      max-height: 350px;
-
-      overflow-y: auto;
-
-
-      font-size: 14px;
-
-    }
-
-
-
-
-
-    #routeMenu label {
-
-      margin-bottom: 6px;
-
-      cursor: pointer;
-
-      user-select: none;
-
-      white-space: nowrap;
-
-    }
-
-
-
-
-
-    #routeMenu span {
-
-      cursor: pointer;
-
-      color: #0056b3;
-
-    }
-
-
-
-
-
-    #routeMenu span:hover {
-
-      color: #003d80;
-
-      text-decoration: underline;
-
-    }
-
-
-
-
-
-    .playButton {
-
-      margin-left: 8px;
-
-      cursor: pointer;
-
-      color: #008000;
-
-      font-weight: bold;
-
-    }
-
-
-
-
-
-    .playButton:hover {
-
-      color: #004d00;
-
-      text-decoration: underline;
-
-    }
-
-
-
-
-
-    @media (max-width: 600px) {
-
-
-      header {
-
-        justify-content: center;
-
-        padding: 10px;
-
-      }
-
-
-
-      header button {
-
-        font-size: 14px;
-
-        padding: 8px 12px;
-
-      }
-
-
-
-      #map {
-
-        width: 95vw;
-
-        height: 70vh;
-
-      }
-
-
-
-      #routeMenu {
-
-        max-width: 80vw;
-
-        font-size: 13px;
-
-      }
-
-
-    }
-
-
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>JourneyMap</title>
+
+<link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css"/>
+
+<style>
+
+html, body {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  overflow-x: hidden;
+}
+
+body {
+  font-family: Arial, sans-serif;
+  background: white;
+}
+
+header {
+  width: 100%;
+  box-sizing: border-box;
+  background: #333;
+  padding: 10px 20px;
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+header a {
+  text-decoration: none;
+}
+
+header button {
+  background: #4da6ff;
+  color: white;
+  border: none;
+  padding: 10px 18px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 16px;
+}
+
+header button:hover {
+  background: #2f89e0;
+}
+
+#map {
+  width: min(1200px, 78.5vw);
+  height: min(600px, 86.5vh);
+  border: 1px solid black;
+  margin: 15px auto;
+  position: relative;
+}
+
+.leaflet-control-attribution {
+  display: none !important;
+}
+
+#routeMenu {
+  position: absolute;
+  bottom: 10px;
+  right: 10px;
+
+  background: rgba(255,255,255,0.9);
+
+  padding: 10px;
+  border-radius: 6px;
+
+  z-index: 1000;
+
+  display: flex;
+  flex-direction: column;
+
+  max-height: 350px;
+  overflow-y: auto;
+
+  font-size: 14px;
+}
+
+#routeMenu label {
+  margin-bottom: 6px;
+  cursor: pointer;
+  user-select: none;
+  white-space: nowrap;
+}
+
+#routeMenu span {
+  cursor: pointer;
+  color: #0056b3;
+}
+
+#routeMenu span:hover {
+  color: #003d80;
+  text-decoration: underline;
+}
+
+.playButton {
+  margin-left: 8px;
+  cursor: pointer;
+  color: #008000;
+  font-weight: bold;
+}
+
+.playButton:hover {
+  color: #004d00;
+  text-decoration: underline;
+}
+
+@media (max-width:600px){
+
+header {
+  justify-content:center;
+  padding:10px;
+}
+
+header button {
+  font-size:14px;
+  padding:8px 12px;
+}
+
+#map {
+  width:95vw;
+  height:70vh;
+}
+
+#routeMenu {
+  max-width:80vw;
+  font-size:13px;
+}
+
+}
+
+</style>
 </head>
 
 
 <body>
 
-
 <header>
-  <a href="index.html"><button>Home</button></a>
-  <a href="matsuya.html"><button>Matsuya</button></a>
-  <a href="concerts.html"><button>Concerts</button></a>
-  <a href="journeymap.html"><button>JourneyMap</button></a>
+<a href="index.html"><button>Home</button></a>
+<a href="matsuya.html"><button>Matsuya</button></a>
+<a href="concerts.html"><button>Concerts</button></a>
+<a href="journeymap.html"><button>JourneyMap</button></a>
 </header>
 
 
 <div id="map">
-
-  <div id="routeMenu"></div>
-
+<div id="routeMenu"></div>
 </div>
 
 
@@ -264,6 +162,7 @@
 
 
 <script>
+
 const map = L.map('map').setView(
   [36.2048,138.2529],
   5
@@ -282,11 +181,13 @@ L.tileLayer(
 // GPX ROUTES
 
 const routes = [
+
 {
  name:"To_Sunset_Hill",
  file:"To_Sunset_Hill.gpx",
  color:"#cc6600"
 },
+
 {
  name:"Apr_12_2026_2_12_54_PM_spring",
  file:"Apr_12_2026_2_12_54_PM_spring.gpx",
@@ -372,52 +273,51 @@ const routes = [
 
 {
  name:"Jan_14_2024_8_48_14_AM_sfc_biking_w_ale_x",
- file:"Jan_14_2024_8_48_14_AM_sfc_biking_w_ale_x.gpx",
+ file:"Jan_14,_2024_8_48_14_AM_sfc_biking_w_ale_x.gpx",
  color:"#aa44aa"
 },
 
 {
  name:"Jan_8_2024_11_12_10_AM_suwa",
- file:"Jan_8_2024_11_12_10_AM_suwa.gpx",
+ file:"Jan_8,_2024_11_12_10_AM_suwa.gpx",
  color:"#ffaa00"
 },
+
 {
  name:"Jan_4_2024_8_15_58_AM_kamakura",
- file:"Jan_4_2024_8_15_58_AM_kamakura.gpx",
+ file:"Jan_4,_2024_8_15_58_AM_kamakura.gpx",
  color:"#44aa44"
 },
+
 {
  name:"Dec_29_2023_5_19_43_PM_from_ski",
- file:"Dec_29_2023_5_19_43_PM_from_ski.gpx",
+ file:"Dec_29,_2023_5_19_43_PM_from_ski.gpx",
  color:"#006666"
 },
 
 {
  name:"Dec_24_2023_10_28_36_AM_to_hiyoshi_honcho_bookoff",
- file:"Dec_24_2023_10_28_36_AM_to_hiyoshi_honcho_bookoff.gpx",
+ file:"Dec_24,_2023_10_28_36_AM_to_hiyoshi_honcho_bookoff.gpx",
  color:"#666600"
 },
 
 {
  name:"Nov_30_2023_5_11_10_PM_actually_2_2km_book_off_shinjuku",
- file:"Nov_30_2023_5_11_10_PM_actually_2_2km_book_off_shinjuku.gpx",
+ file:"Nov_30,_2023_5_11_10_PM_actually_2_2km_book_off_shinjuku.gpx",
  color:"#ff99cc"
 },
 
 {
  name:"Nov_30_2023_3_53_10_PM_missed_bus_and_bookoff",
- file:"Nov_30_2023_3_53_10_PM_missed_bus_and_bookoff.gpx",
+ file:"Nov_30,_2023_3_53_10_PM_missed_bus_and_bookoff.gpx",
  color:"#009999"
 },
 
 {
  name:"Nov_29_2023_12_49_36_PM_to_center",
- file:"Nov_29_2023_12_49_36_PM_to_center.gpx",
+ file:"Nov_29,_2023_12_49_36_PM_to_center.gpx",
  color:"#9999ff"
 },
-
-
-/* No date in filename */
 
 {
  name:"Tsurumi",
@@ -441,18 +341,17 @@ const speedLabel = document.createElement("label");
 speedLabel.style.marginTop = "0px";
 
 speedLabel.innerHTML = `
-  Play Route in:
-  <input 
-    id="animationSpeed"
-    type="number"
-    value="5"
-    min="1"
-    max="300"
-    style="width:50px;"
-  >
-  Seconds
+Play Route in:
+<input
+id="animationSpeed"
+type="number"
+value="5"
+min="1"
+max="300"
+style="width:50px;"
+>
+Seconds
 `;
-
 
 
 
@@ -473,210 +372,205 @@ L.DomEvent.disableScrollPropagation(routeMenu);
 routes.forEach((route,index)=>{
 
 
-  const routeData = {
+const routeData = {
 
-    layer:null,
+layer:null,
 
-    animationLayer:null,
+animationLayer:null,
 
-    animationFrame:null,
+animationFrame:null,
 
-    coordinates:[],
+coordinates:[],
 
-    visible:true
+visible:true
 
-  };
+};
 
 
-  routeObjects.push(routeData);
+routeObjects.push(routeData);
 
 
 
 
-  const layer = new L.GPX(route.file,{
+const layer = new L.GPX(route.file,{
 
-    async:true,
+async:true,
 
 
-    polyline_options:{
+markers:false,
 
-      color:route.color,
 
-      weight:4,
+polyline_options:{
 
-      opacity:0.9
+color:route.color,
 
-    },
+weight:4,
 
+opacity:0.9
 
-    marker_options:{
+},
 
-      startIconUrl:null,
 
-      endIconUrl:null,
+marker_options:{
 
-      shadowUrl:null
+startIconUrl:null,
 
-    }
+endIconUrl:null,
 
-  });
+shadowUrl:null,
 
+wptIconUrls:[]
 
+}
 
-  routeData.layer = layer;
+});
 
 
 
-  layer.bindTooltip(route.name,{
+routeData.layer = layer;
 
-    sticky:true,
 
-    direction:"top"
 
-  });
+layer.bindTooltip(route.name,{
 
+sticky:true,
 
+direction:"top"
 
-  layer.addTo(map);
+});
 
 
 
+layer.addTo(map);
 
 
-  const label = document.createElement("label");
 
 
 
-  const checkbox = document.createElement("input");
+const label = document.createElement("label");
 
-  checkbox.type="checkbox";
 
-  checkbox.checked=true;
+const checkbox = document.createElement("input");
 
+checkbox.type="checkbox";
 
+checkbox.checked=true;
 
 
-  const text=document.createElement("span");
 
-  text.textContent=" " + route.name;
 
+const text=document.createElement("span");
 
+text.textContent=" " + route.name;
 
 
-  const play=document.createElement("span");
 
-  play.className="playButton";
 
-  play.textContent=" [Play]";
+const play=document.createElement("span");
 
+play.className="playButton";
 
+play.textContent=" [Play]";
 
 
 
-  label.appendChild(checkbox);
 
-  label.appendChild(text);
 
-  label.appendChild(play);
+label.appendChild(checkbox);
 
+label.appendChild(text);
 
+label.appendChild(play);
 
-  routeMenu.appendChild(label);
 
 
+routeMenu.appendChild(label);
 
 
 
 
-  // Zoom to route
 
-  text.addEventListener("click",(e)=>{
 
-    e.stopPropagation();
+text.addEventListener("click",(e)=>{
 
+e.stopPropagation();
 
-    if(layer.getBounds().isValid()){
 
-      map.fitBounds(
-        layer.getBounds(),
-        {
-          padding:[40,40]
-        }
-      );
+if(layer.getBounds().isValid()){
 
-    }
+map.fitBounds(
+layer.getBounds(),
+{
+padding:[40,40]
+}
+);
 
-  });
+}
 
+});
 
 
 
 
 
 
-  checkbox.addEventListener("click",(e)=>{
+checkbox.addEventListener("click",(e)=>{
 
-    e.stopPropagation();
+e.stopPropagation();
 
-  });
+});
 
 
 
 
 
 
+checkbox.addEventListener("change",()=>{
 
-  checkbox.addEventListener("change",()=>{
 
+if(checkbox.checked){
 
-    if(checkbox.checked){
+layer.addTo(map);
 
+routeData.visible=true;
 
-      layer.addTo(map);
+}
 
-      routeData.visible=true;
+else{
 
 
-    }
+map.removeLayer(layer);
 
-    else{
+routeData.visible=false;
 
 
-      map.removeLayer(layer);
 
-      routeData.visible=false;
+if(routeData.animationFrame){
 
+cancelAnimationFrame(
+routeData.animationFrame
+);
 
+routeData.animationFrame=null;
 
-      if(routeData.animationFrame){
+}
 
-        cancelAnimationFrame(
-          routeData.animationFrame
-        );
 
-        routeData.animationFrame=null;
 
-      }
+if(routeData.animationLayer){
 
+map.removeLayer(
+routeData.animationLayer
+);
 
+routeData.animationLayer=null;
 
-      if(routeData.animationLayer){
+}
 
-        map.removeLayer(
-          routeData.animationLayer
-        );
+}
 
-        routeData.animationLayer=null;
 
-      }
-
-
-    }
-
-
-  });
-
-
+});
 
 
 
@@ -684,31 +578,44 @@ routes.forEach((route,index)=>{
 
 layer.on("loaded",(e)=>{
 
-  let layers = e.target.getLayers();
 
-  for (let i = 0; i < layers.length; i++) {
-
-    if (typeof layers[i].getLatLngs === "function") {
-
-      routeData.coordinates = layers[i].getLatLngs().flat();
-
-      break;
-
-    }
-
-  }
+let layers = e.target.getLayers();
 
 
-  if(index===0){
+for(let i=0;i<layers.length;i++){
 
-    map.fitBounds(
-      e.target.getBounds(),
-      {
-        padding:[40,40]
-      }
-    );
 
-  }
+if(typeof layers[i].getLatLngs==="function"){
+
+
+routeData.coordinates =
+flattenCoordinates(
+layers[i].getLatLngs()
+);
+
+
+break;
+
+
+}
+
+
+}
+
+
+
+
+if(index===0){
+
+map.fitBounds(
+e.target.getBounds(),
+{
+padding:[40,40]
+}
+);
+
+}
+
 
 });
 
@@ -716,80 +623,66 @@ layer.on("loaded",(e)=>{
 
 
 
+play.addEventListener("click",(e)=>{
 
 
-  play.addEventListener("click",(e)=>{
+e.preventDefault();
 
-
-    e.preventDefault();
-
-    e.stopPropagation();
-
-
-
-
-    if(routeData.coordinates.length===0){
-
-      alert("Route is still loading.");
-
-      return;
-
-    }
+e.stopPropagation();
 
 
 
 
+if(!routeData.coordinates || routeData.coordinates.length < 2){
 
-    // Zoom camera to route
+alert("Route is still loading. Try again in a few seconds.");
 
-    if(layer.getBounds().isValid()){
+return;
 
-      map.fitBounds(
-        layer.getBounds(),
-        {
-          padding:[40,40]
-        }
-      );
-
-    }
+}
 
 
 
 
 
+if(layer.getBounds().isValid()){
 
+map.fitBounds(
+layer.getBounds(),
+{
+padding:[40,40]
+}
+);
 
-    // Check box stays checked
-
-    if(!checkbox.checked){
-
-      checkbox.checked=true;
-
-      routeData.visible=true;
-
-    }
-
-
-
-
-
-    // Hide original GPX
-
-    if(map.hasLayer(layer)){
-
-      map.removeLayer(layer);
-
-    }
+}
 
 
 
 
 
-    animateRoute(routeData,route);
+if(!checkbox.checked){
+
+checkbox.checked=true;
+
+routeData.visible=true;
+
+}
 
 
 
-  });
+
+
+if(map.hasLayer(layer)){
+
+map.removeLayer(layer);
+
+}
+
+
+
+
+
+animateRoute(routeData,route);
 
 
 
@@ -797,16 +690,11 @@ layer.on("loaded",(e)=>{
 
 
 
-
+});
 
 
 
 routeMenu.appendChild(speedLabel);
-
-
-
-
-
 const speedInput =
 document.getElementById("animationSpeed");
 
@@ -815,25 +703,72 @@ document.getElementById("animationSpeed");
 speedInput.addEventListener("input",()=>{
 
 
-  if(speedInput.value<1){
+if(speedInput.value < 1){
 
-    speedInput.value=1;
+speedInput.value = 1;
 
-  }
-
-
-  if(speedInput.value>300){
-
-    speedInput.value=300;
-
-  }
+}
 
 
-  speedInput.value =
-    Math.floor(speedInput.value);
+if(speedInput.value > 300){
+
+speedInput.value = 300;
+
+}
+
+
+speedInput.value =
+Math.floor(speedInput.value);
 
 
 });
+
+
+
+
+
+// Flatten GPX multi-segment tracks into one continuous route
+
+function flattenCoordinates(coords){
+
+let result = [];
+
+
+function recurse(arr){
+
+arr.forEach(item=>{
+
+
+if(Array.isArray(item)){
+
+
+recurse(item);
+
+
+}
+
+else if(item && item.lat && item.lng){
+
+
+result.push(item);
+
+
+}
+
+
+});
+
+
+}
+
+
+recurse(coords);
+
+
+return result;
+
+}
+
 
 
 
@@ -844,151 +779,155 @@ function animateRoute(routeData,route){
 
 
 
-  if(routeData.animationLayer){
+if(routeData.animationLayer){
 
-    map.removeLayer(
-      routeData.animationLayer
-    );
+map.removeLayer(
+routeData.animationLayer
+);
 
-  }
+}
 
 
 
-  if(routeData.animationFrame){
+if(routeData.animationFrame){
 
-    cancelAnimationFrame(
-      routeData.animationFrame
-    );
+cancelAnimationFrame(
+routeData.animationFrame
+);
 
-  }
+}
 
 
 
 
 
-  const animatedLine =
-    L.polyline([],{
+const animatedLine =
+L.polyline([],{
 
-      color:route.color,
+color:route.color,
 
-      weight:6,
+weight:6,
 
-      opacity:1
+opacity:1
 
-    }).addTo(map);
+}).addTo(map);
 
 
 
 
-  animatedLine.bindTooltip(route.name,{
+animatedLine.bindTooltip(route.name,{
 
-    sticky:true,
+sticky:true,
 
-    direction:"top"
+direction:"top"
 
-  });
+});
 
 
 
 
 
-  routeData.animationLayer =
-    animatedLine;
+routeData.animationLayer =
+animatedLine;
 
 
 
 
-  const points =
-    routeData.coordinates;
+const points =
+routeData.coordinates;
 
 
 
 
-  const duration =
-    Number(speedInput.value)*1000;
+const duration =
+Number(speedInput.value) * 1000;
 
 
 
 
-  let startTime=null;
+let startTime = null;
 
 
 
 
 
-  function animate(timestamp){
+function animate(timestamp){
 
 
-    if(!startTime){
 
-      startTime=timestamp;
+if(!startTime){
 
-    }
+startTime = timestamp;
 
+}
 
 
 
-    const progress=Math.min(
 
-      (timestamp-startTime)/duration,
+const progress = Math.min(
 
-      1
+(timestamp - startTime) / duration,
 
-    );
+1
 
+);
 
 
 
 
-    const index=Math.floor(
 
-      progress*(points.length-1)
+const index = Math.floor(
 
-    );
+progress * (points.length - 1)
 
+);
 
 
 
 
-    animatedLine.setLatLngs(
 
-      points.slice(
-        0,
-        index+1
-      )
+animatedLine.setLatLngs(
 
-    );
+points.slice(
+0,
+index + 1
+)
 
+);
 
 
 
 
 
-    if(progress<1){
 
+if(progress < 1){
 
-      routeData.animationFrame =
-        requestAnimationFrame(animate);
 
+routeData.animationFrame =
+requestAnimationFrame(animate);
 
-    }
 
-    else{
+}
 
+else{
 
-      routeData.animationFrame=null;
 
+routeData.animationFrame = null;
 
-    }
 
+}
 
-  }
 
 
+}
 
 
-  routeData.animationFrame =
-    requestAnimationFrame(animate);
+
+
+
+routeData.animationFrame =
+requestAnimationFrame(animate);
+
 
 
 }
@@ -1003,7 +942,7 @@ routeMenu.addEventListener(
 "mousedown",
 function(e){
 
-  e.stopPropagation();
+e.stopPropagation();
 
 });
 
@@ -1012,13 +951,15 @@ function(e){
 
 
 
-// Fix Leaflet sizing on mobile rotation/resizing
 
 window.addEventListener("resize",()=>{
 
-  map.invalidateSize();
+map.invalidateSize();
 
 });
+
+
+
 </script>
 
 </body>
