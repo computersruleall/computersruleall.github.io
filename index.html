@@ -5,36 +5,41 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Interactive Japan Map with Filtering and Images</title>
   <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+
   <style>
     html, body {
       margin: 0;
       padding: 0;
     }
-    /* Map size and border */
+
     #map {
-		width: 1200px; /* Set the width to 1200px */
-      height: 600px; /* Set the height to 600px */
-      border: 1px solid black; /* Add a black border with 1px thickness around the map */
-      position: relative; /* Ensure the map is a positioning context for the filter menu */
-	  margin-left: auto;
-      margin-right: auto;  /* Center the map horizontally */ 
- }
+      width: 1200px;
+      height: 600px;
+      border: 1px solid black;
+      position: relative;
+      margin-left: auto;
+      margin-right: auto;
+	  margin: 30px auto;	  
+    }
+
     .custom-marker {
       width: 15px;
       height: 15px;
       background-color: red;
       border-radius: 50%;
-      border: 1px solid black;  
-	  transition: transform 0.2s ease;
+      border: 1px solid black;
+      transition: transform 0.2s ease;
       transform-origin: center center;
       display: flex;
       justify-content: center;
       align-items: center;
     }
+
     .custom-marker.clicked,
     .custom-marker:hover {
       transform: scale(1.2);
     }
+
     .info-box {
       position: absolute;
       background: white;
@@ -45,208 +50,284 @@
       pointer-events: auto;
       z-index: 999;
       min-width: 150px;
-      opacity: 1; /* Set opacity to 1 initially */
-      transition: opacity 0s ease; /* Instant opacity transition */
+      opacity: 1;
+      margin-top: 0;
+      color: black;
+	  font-size: 16px;
     }
-    img {
-      width: auto; /* Set the image width to 300px max */
-      height: 250px
+
+    .info-box p {
+      margin-top: 0;
+      padding: 0;
+      margin-bottom: 5px;
     }
-    
-    /* Hide the Leaflet attribution (the link) */
+
+    .info-box img {
+      width: auto;
+      height: 250px;
+      display: block;
+      opacity: 1;
+    }
+
     .leaflet-control-attribution {
       display: none !important;
     }
 
-    /* Filter Menu Position */
     #filterMenu {
       position: absolute;
-      bottom: 10px; /* 10px from the bottom */
-      right: 10px;  /* 10px from the right */
-      background: rgba(255, 255, 255, 0.7); /* Semi-transparent white background */
+      bottom: 10px;
+      right: 10px;
+      background: rgba(255, 255, 255, 0.7);
       padding: 10px;
       border-radius: 5px;
-      z-index: 1000; /* Ensure it stays above the map */
+      z-index: 1000;
       display: flex;
-      flex-direction: column; /* Stack filter options vertically */
+      flex-direction: column;
     }
 
     #filterMenu label {
-      margin-bottom: 5px; /* Add spacing between checkboxes */
+      margin-bottom: 5px;
+    }
+
+    header {
+      background: #333;
+      padding: 10px 20px;
+      display: flex;
+      gap: 10px;
+      justify-content: center;
+      align-items: center;
+    }
+
+    header a {
+      text-decoration: none;
+    }
+
+    header button {
+      background: #4da6ff;
+      color: white;
+      border: none;
+      padding: 10px 18px;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 16px;
+    }
+
+    header button:hover {
+      background: #2f89e0;
     }
   </style>
 </head>
+
 <body>
-  <!-- Filter Menu (Now as checkboxes with default checked state) -->
-  <div id="map">
-    <div id="filterMenu">
-    <label><input type="checkbox" id="categoryCity" checked> City</label>
-    <label><input type="checkbox" id="categoryTourist" checked> Tourist</label>
-    <label><input type="checkbox" id="categoryHistorical" checked> Historical</label>
-	</div>
+
+<header>
+  <a href="index.html"><button>Home</button></a>
+  <a href="matsuya.html"><button>Matsuya</button></a>
+  <a href="concerts.html"><button>Concerts</button></a>
+  <a href="journeymap.html"><button>JourneyMap</button></a>
+</header>
+
+<div id="map">
+  <div id="filterMenu">
+    <label><input type="checkbox" id="categoryPhotos" checked> Photos</label>
+    <label><input type="checkbox" id="categoryJourneys" checked> Journeys</label>
+    <label><input type="checkbox" id="categoryTest" checked> Test</label>
   </div>
+</div>
 
-  <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
-  <script>
-    const map = L.map('map').setView([36.2048, 138.2529], 5);
+<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
 
-    // Using Thunderforest Neighborhood style
-    L.tileLayer('https://{s}.tile.thunderforest.com/neighbourhood/{z}/{x}/{y}.png?apikey=db5ae1f5778a448ca662554581f283c5', {
-      attribution: '&copy; OpenStreetMap contributors &copy; Thunderforest'
-    }).addTo(map);
+<script>
+  const map = L.map('map').setView([36.2048, 138.2529], 5);
 
-    // Markers data with added 'category' attributes and image URLs
-    const markersData = [
-      { lat: 36.05346958934558, lng: 138.1225417013597, text: "Tateishi Park", category: "city", image: "suwa.jpg" },
-	  { lat: 35.791204919319576, lng: 139.87161293483373, text: "Mizumoto Park", category: "city", image: "mizumoto.jpg" },
-      { lat: 35.67050302706143, lng: 139.54681967899265, text: "Jindai Botanical Gardens", category: "city", image: "jindai.jpg" },
-      { lat: 35.18438669070151, lng: 139.6462977392656, text: "Miura Kaigan", category: "tourist", image: "miurakaigan.png" },
-      { lat: 32.72937623854756, lng: 129.86896707161313, text: "Mt. Nabekanmuri Park", category: "historical", image: "nagasaki.jpg" },
-      { lat: 41.328373286467674, lng: 141.08932565296703, text: "Osorezan Bodaiji", category: "city", image: "bodaiji.jpg" },	
-      { lat: 35.015904830170825, lng: 135.6656124421574, text: "Daihaku Senkoji", category: "city", image: "senkoji.jpg" },	  
-      { lat: 35.25323529186975, lng: 135.97471297056364, text: "Kita-Komatsu", category: "city", image: "kitakomatsu.jpg" },	
-{ lat: 35.88383416313572, lng: 139.31337546237563, text: "Kinchakuda", category: "city", image: "kinchakuda.jpg" },	
-     { lat: 36.40660161579912, lng: 140.60035055385845, text: "Hitachi Seaside Park (Autumn)", category: "city", image: "hitachi_1.jpg" },	
-     { lat: 36.40716554319468, lng: 140.59343441293572, text: "Hitachi Seaside Park (Spring)", category: "city", image: "hitachi_2.jpg" },	 
- { lat: 36.314145641437, lng:  139.52002772323175, text: "Ashikaga Flower Park", category: "city", image: "ashikaga.jpg" },
-{ lat: 35.48902344726391, lng:  136.03733594954906, text: "Metasequoia Avenue", category: "city", image: "avenue.jpg" },
- { lat: 35.427822414178216, lng: 136.04273148899696, text: "Katsurahama-enchi", category: "historical", image: "katsurahama.jpg" }
-    ];
+  L.tileLayer('https://{s}.tile.thunderforest.com/neighbourhood/{z}/{x}/{y}.png?apikey=db5ae1f5778a448ca662554581f283c5', {
+    attribution: '&copy; OpenStreetMap contributors &copy; Thunderforest'
+  }).addTo(map);
 
-    let markers = [];
-    const infoBoxes = {};  
-    let currentInfoBox = null;
+  const markersData = [
+    { lat: 36.05346958934558, lng: 138.1225417013597, text: "Tateishi Park", category: "photos", image: "suwa.jpg" },
+    { lat: 35.791204919319576, lng: 139.87161293483373, text: "Mizumoto Park", category: "photos", image: "mizumoto.jpg" },
+    { lat: 35.67050302706143, lng: 139.54681967899265, text: "Jindai Botanical Gardens", category: "photos", image: "jindai.jpg" },
+    { lat: 35.18438669070151, lng: 139.6462977392656, text: "Miura Kaigan", category: "photos", image: "miurakaigan.png" },
+    { lat: 32.72937623854756, lng: 129.86896707161313, text: "Mt. Nabekanmuri Park", category: "photos", image: "nagasaki.jpg" },
+    { lat: 41.328373286467674, lng: 141.08932565296703, text: "Osorezan Bodaiji", category: "photos", image: "bodaiji.jpg" },
+    { lat: 35.015904830170825, lng: 135.6656124421574, text: "Daihaku Senkoji", category: "photos", image: "senkoji.jpg" },
+    { lat: 35.25323529186975, lng: 135.97471297056364, text: "Kita-Komatsu", category: "photos", image: "kitakomatsu.jpg" },
+    { lat: 35.88383416313572, lng: 139.31337546237563, text: "Kinchakuda", category: "photos", image: "kinchakuda.jpg" },
+    { lat: 36.40660161579912, lng: 140.60035055385845, text: "Hitachi Seaside Park (Autumn)", category: "photos", image: "hitachi_1.jpg" },
+    { lat: 36.40716554319468, lng: 140.59343441293572, text: "Hitachi Seaside Park (Spring)", category: "photos", image: "hitachi_2.jpg" },
+    { lat: 36.314145641437, lng: 139.52002772323175, text: "Ashikaga Flower Park", category: "photos", image: "ashikaga.jpg" },
+    { lat: 35.48902344726391, lng: 136.03733594954906, text: "Metasequoia Avenue", category: "photos", image: "avenue.jpg" },
+    { lat: 35.427822414178216, lng: 136.04273148899696, text: "Katsurahama-enchi", category: "photos", image: "katsurahama.jpg" },
+    { lat: 34.98537834574205, lng: 135.75811838407432, text: "100% Exploration", category: "journeys", image: "avenue.jpg" }
+  ];
 
-    markersData.forEach(markerData => {
-      const div = document.createElement('div');
-      div.className = 'custom-marker';
+  let markers = [];
+  const infoBoxes = {};
+  let currentInfoBox = null;
 
-      const divIcon = L.divIcon({
-        className: '',
-        html: div.outerHTML,
-        iconSize: [20, 20],
-        iconAnchor: [10, 10],
-      });
 
-      const marker = L.marker([markerData.lat, markerData.lng], { icon: divIcon }).addTo(map);
+  markersData.forEach(markerData => {
 
-      // Create an info box with image and text for each marker
-      const infoBox = document.createElement('div');
-      infoBox.className = 'info-box';
-      infoBox.innerHTML = `<p>${markerData.text}</p><img src="${markerData.image}" alt="${markerData.text}" />`; // Using innerHTML
-      infoBox.style.display = 'none';
-      document.body.appendChild(infoBox);
-      infoBoxes[`${markerData.lat},${markerData.lng}`] = infoBox;
+    const div = document.createElement('div');
+    div.className = 'custom-marker';
 
-      marker.category = markerData.category;  
-      markers.push(marker);
-
-      const updateInfoBoxPosition = () => {
-        const pos = map.latLngToContainerPoint(marker.getLatLng());
-        infoBox.style.left = `${pos.x + 10}px`;
-        infoBox.style.top = `${pos.y + 10}px`;
-      };
-
-      marker.on('mouseover', () => {
-        updateInfoBoxPosition();
-        infoBox.style.display = 'block';
-      });
-
-      marker.on('mouseout', () => {
-        if (currentInfoBox !== infoBox) {
-          infoBox.style.display = 'none';
-        }
-      });
-
-      marker.on('click', (e) => {
-        e.originalEvent.stopPropagation();
-
-        if (currentInfoBox === infoBox) {
-          return;
-        }
-
-        if (currentInfoBox) {
-          currentInfoBox.style.display = 'none';
-        }
-
-        currentInfoBox = infoBox;
-        updateInfoBoxPosition();
-        infoBox.style.display = 'block';
-      });
-
-      // Update info box position continuously during move and zoom events
-      map.on('move', () => {
-        if (currentInfoBox === infoBox) {
-          updateInfoBoxPosition();
-          checkIfInfoBoxInsideMap(infoBox);  // Continuous check while dragging
-        }
-      });
-
-      map.on('zoom', () => {
-        if (currentInfoBox === infoBox) {
-          updateInfoBoxPosition();
-          checkIfInfoBoxInsideMap(infoBox);
-        }
-      });
-
-      // Update position immediately after zoom (during zooming)
-      map.on('zoomstart', () => {
-        if (currentInfoBox === infoBox) {
-          updateInfoBoxPosition();
-          checkIfInfoBoxInsideMap(infoBox);
-        }
-      });
-    });
-
-    map.on('click', () => {
-      currentInfoBox = null;
-      document.querySelectorAll('.info-box').forEach(box => box.style.display = 'none');
-    });
-
-    // Filter the markers based on selected checkboxes (inverted logic)
-    const updateMarkerVisibility = () => {
-      const hideCity = !document.getElementById('categoryCity').checked;
-      const hideTourist = !document.getElementById('categoryTourist').checked;
-      const hideHistorical = !document.getElementById('categoryHistorical').checked;
-
-      markers.forEach(marker => {
-        if ((hideCity && marker.category === 'city') ||
-            (hideTourist && marker.category === 'tourist') ||
-            (hideHistorical && marker.category === 'historical')) {
-          map.removeLayer(marker); // Hide the marker
-        } else {
-          marker.addTo(map); // Show the marker
-        }
-      });
-    };
-
-    // Event listeners for the checkboxes
-    document.getElementById('categoryCity').addEventListener('change', updateMarkerVisibility);
-    document.getElementById('categoryTourist').addEventListener('change', updateMarkerVisibility);
-    document.getElementById('categoryHistorical').addEventListener('change', updateMarkerVisibility);
-
-    // Initialize marker visibility based on the initial checkbox state
-    updateMarkerVisibility();
-
-    // Check if the info box is completely inside the map bounds
-    function checkIfInfoBoxInsideMap(infoBox) {
-      const mapBounds = map.getContainer().getBoundingClientRect();
-      const infoBoxBounds = infoBox.getBoundingClientRect();
-
-      // Check if all four corners of the info box are inside the map bounds
-      const isFullyOutside = 
-        infoBoxBounds.top >= mapBounds.bottom ||  // Top of info box is below map
-        infoBoxBounds.bottom <= mapBounds.top ||  // Bottom of info box is above map
-        infoBoxBounds.left >= mapBounds.right ||  // Left of info box is beyond map
-        infoBoxBounds.right <= mapBounds.left;   // Right of info box is beyond map
-
-      if (isFullyOutside) {
-        infoBox.style.opacity = '0'; // Hide info box instantly
-      } else {
-        infoBox.style.opacity = '1'; // Show info box
-      }
+    if (markerData.category === 'journeys') {
+      div.style.backgroundColor = '#4da6ff';
     }
 
-  </script>
+    const divIcon = L.divIcon({
+      className: '',
+      html: div.outerHTML,
+      iconSize: [20, 20],
+      iconAnchor: [10, 10]
+    });
+
+
+    const marker = L.marker(
+      [markerData.lat, markerData.lng],
+      { icon: divIcon }
+    ).addTo(map);
+
+
+    const infoBox = document.createElement('div');
+
+    infoBox.className = 'info-box';
+
+    infoBox.innerHTML = `
+      <p>${markerData.text}</p>
+      <img src="${markerData.image}" alt="${markerData.text}">
+    `;
+
+    infoBox.style.display = 'none';
+
+
+    // Changed from document.body.appendChild()
+    // to keep popup positioning relative to the map
+    document.getElementById('map').appendChild(infoBox);
+
+
+    infoBoxes[`${markerData.lat},${markerData.lng}`] = infoBox;
+
+
+    marker.category = markerData.category;
+    markers.push(marker);
+
+
+    const updateInfoBoxPosition = () => {
+
+      const pos = map.latLngToContainerPoint(marker.getLatLng());
+
+      infoBox.style.left = `${pos.x - (infoBox.offsetWidth / 2)}px`;
+      infoBox.style.top = `${pos.y + 8}px`;
+
+    };
+
+
+    marker.on('mouseover', () => {
+
+      infoBox.style.display = 'block';
+	  
+	  updateInfoBoxPosition();
+
+    });
+
+
+    marker.on('mouseout', () => {
+
+      if (currentInfoBox !== infoBox) {
+        infoBox.style.display = 'none';
+      }
+
+    });
+
+
+    marker.on('click', (e) => {
+
+      e.originalEvent.stopPropagation();
+
+
+      if (currentInfoBox === infoBox) {
+        return;
+      }
+
+
+      if (currentInfoBox) {
+        currentInfoBox.style.display = 'none';
+      }
+
+
+      currentInfoBox = infoBox;
+
+      updateInfoBoxPosition();
+
+      infoBox.style.display = 'block';
+
+    });
+
+
+    map.on('move zoom zoomstart', () => {
+
+      if (currentInfoBox === infoBox) {
+
+        updateInfoBoxPosition();
+
+      }
+
+    });
+
+  });
+  map.on('click', () => {
+
+    currentInfoBox = null;
+
+    document.querySelectorAll('.info-box')
+      .forEach(box => box.style.display = 'none');
+
+  });
+
+
+  const updateMarkerVisibility = () => {
+
+    const hidePhotos = !document.getElementById('categoryPhotos').checked;
+    const hideJourneys = !document.getElementById('categoryJourneys').checked;
+    const hideTest = !document.getElementById('categoryTest').checked;
+
+
+    markers.forEach(marker => {
+
+      if (
+        (hidePhotos && marker.category === 'photos') ||
+        (hideJourneys && marker.category === 'journeys') ||
+        (hideTest && marker.category === 'test')
+      ) {
+
+        map.removeLayer(marker);
+
+      } else {
+
+        marker.addTo(map);
+
+      }
+
+    });
+
+  };
+
+
+  document.getElementById('categoryPhotos')
+    .addEventListener('change', updateMarkerVisibility);
+
+  document.getElementById('categoryJourneys')
+    .addEventListener('change', updateMarkerVisibility);
+
+  document.getElementById('categoryTest')
+    .addEventListener('change', updateMarkerVisibility);
+
+
+  updateMarkerVisibility();
+
+</script>
+
 </body>
-</html>
+</html>  
