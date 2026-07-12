@@ -51,6 +51,7 @@ header button:hover {
   background: #2f89e0;
 }
 
+
 #map {
   width: min(1200px, 78.5vw);
   height: min(600px, 86.5vh);
@@ -59,112 +60,235 @@ header button:hover {
   position: relative;
 }
 
+
 .leaflet-control-attribution {
-  display: none !important;
+  display:none !important;
 }
+
+
 
 #routeMenu {
-  position: absolute;
-  bottom: 10px;
-  right: 10px;
 
-  background: rgba(255,255,255,0.9);
+  position:absolute;
 
-padding: 10px 10px 5px 10px;
-  border-radius: 6px;
+  bottom:10px;
 
-  z-index: 1000;
+  right:10px;
 
-  display: flex;
-  flex-direction: column;
 
-  max-height: 350px;
+  background:rgba(255,255,255,0.9);
 
-  font-size: 14px;
+
+  padding:10px;
+
+
+  border-radius:6px;
+
+
+  z-index:1000;
+
+
+  display:flex;
+
+  flex-direction:column;
+
+
+  max-height:350px;
+
+
+  overflow:hidden;
+
+
+  font-size:14px;
 
 }
+
 
 
 #routeList {
 
-  overflow-y: auto;
+  overflow-y:auto;
 
-  overflow-x: hidden;
+  overflow-x:hidden;
 
-  max-height: 285px;
+  max-height:285px;
 
 }
+
+
+
+#menuBottom {
+
+  display:flex;
+
+  justify-content:space-between;
+
+  align-items:center;
+
+  margin-top:5px;
+
+}
+
 
 
 #speedControl {
 
-  flex-shrink: 0;
+  display:flex;
 
-  padding-top: 5px;
+  align-items:center;
 
-  margin-top: 5px;
+  gap:5px;
 
-  margin-bottom: 0px;
+  padding-top:0;
+
+  margin-top:0;
 
 }
+
+
+
 #routeMenu label {
 
-  display: block;
+  display:block;
 
-  width: 100%;
+  width:100%;
 
-  margin-bottom: 6px;
+  margin-bottom:6px;
 
   cursor:pointer;
 
   user-select:none;
 
-  white-space: nowrap;
+  white-space:nowrap;
 
 }
+
+
 
 #routeMenu span {
-  cursor: pointer;
-  color: #0056b3;
+
+  cursor:pointer;
+
+  color:#0056b3;
+
 }
+
+
 
 #routeMenu span:hover {
-  color: #003d80;
-  text-decoration: underline;
+
+  color:#003d80;
+
+  text-decoration:underline;
+
 }
+
+
 
 .playButton {
-  margin-left: 8px;
-  cursor: pointer;
-  color: #008000;
-  font-weight: bold;
+
+  margin-left:8px;
+
+  cursor:pointer;
+
+  color:#008000;
+
+  font-weight:bold;
+
 }
 
+
+
 .playButton:hover {
-  color: #004d00;
-  text-decoration: underline;
+
+  color:#004d00;
+
+  text-decoration:underline;
+
 }
+
+
+
+#minimizeButton {
+
+  width:22px;
+
+  height:22px;
+
+  padding:0;
+
+  background:#ddd;
+
+  border:1px solid #999;
+
+  border-radius:3px;
+
+  cursor:pointer;
+
+  font-size:11px;
+
+  line-height:15px;
+
+  text-align:center;
+
+  flex-shrink:0;
+
+}	
+
+
+
+#minimizeButton:hover {
+
+  background:#bbb;
+
+}
+
+
+
+#routeMenu.minimized #routeList,
+#routeMenu.minimized #speedControl {
+
+  display:none;
+
+}
+
+
 
 @media (max-width:600px){
 
 header {
+
   justify-content:center;
+
   padding:10px;
+
 }
+
 
 header button {
+
   font-size:14px;
+
   padding:8px 12px;
+
 }
+
 
 #map {
+
   width:95vw;
+
   height:70vh;
+
 }
 
+
 #routeMenu {
+
   max-width:80vw;
+
   font-size:13px;
+
 }
 
 }
@@ -175,17 +299,47 @@ header button {
 
 <body>
 
+
 <header>
+
 <a href="index.html"><button>Home</button></a>
+
 <a href="matsuya.html"><button>Matsuya</button></a>
+
 <a href="concerts.html"><button>Concerts</button></a>
+
 <a href="journeymap.html"><button>JourneyMap</button></a>
+
 </header>
 
 
+
 <div id="map">
-<div id="routeMenu"></div>
+
+
+<div id="routeMenu">
+
+
+<div id="routeList"></div>
+
+
+<div id="menuBottom">
+
+
+<div id="speedControl"></div>
+
+
+<button id="minimizeButton">▼</button>
+
+
 </div>
+
+
+</div>
+
+
+</div>
+
 
 
 <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
@@ -194,7 +348,6 @@ header button {
 
 
 <script>
-
 const map = L.map('map').setView(
   [36.2048,138.2529],
   5
@@ -356,68 +509,24 @@ const routes = [
 
 
 
-const routeList = document.createElement("div");
-routeList.id = "routeList";
+const routeList = document.getElementById("routeList");
 
-routeMenu.appendChild(routeList);
-
-
-
-// Animation speed control
-
-const speedLabel = document.createElement("label");
-
-speedLabel.style.marginTop = "0px";
-
-speedLabel.innerHTML = `
-Play Route in:
-<input
-id="animationSpeed"
-type="number"
-value="5"
-min="1"
-max="300"
-style="width:50px;"
->
-Seconds
-`;
-
-
-
-// Store route information
 
 const routeObjects = [];
 
 
 
 L.DomEvent.disableClickPropagation(routeMenu);
+
 L.DomEvent.disableScrollPropagation(routeMenu);
+function loadRoute(route,index,routeData){
 
 
+if(routeData.layer){
 
+return;
 
-
-
-routes.forEach((route,index)=>{
-
-
-const routeData = {
-
-layer:null,
-
-animationLayer:null,
-
-animationFrame:null,
-
-coordinates:[],
-
-visible:true
-
-};
-
-
-routeObjects.push(routeData);
-
+}
 
 
 
@@ -425,9 +534,7 @@ const layer = new L.GPX(route.file,{
 
 async:true,
 
-
 markers:false,
-
 
 polyline_options:{
 
@@ -438,7 +545,6 @@ weight:4,
 opacity:0.9
 
 },
-
 
 marker_options:{
 
@@ -470,145 +576,11 @@ direction:"top"
 
 
 
-layer.addTo(map);
-
-
-
-
-
-const label = document.createElement("label");
-
-
-const checkbox = document.createElement("input");
-
-checkbox.type="checkbox";
-
-checkbox.checked=true;
-
-
-
-
-const text=document.createElement("span");
-
-text.textContent=" " + route.name;
-
-
-
-
-const play=document.createElement("span");
-
-play.className="playButton";
-
-play.textContent=" [Play]";
-
-
-
-
-
-label.appendChild(checkbox);
-
-label.appendChild(text);
-
-label.appendChild(play);
-
-
-
-routeList.appendChild(label);
-
-
-
-
-
-
-text.addEventListener("click",(e)=>{
-
-e.stopPropagation();
-
-
-if(layer.getBounds().isValid()){
-
-map.fitBounds(
-layer.getBounds(),
-{
-padding:[40,40]
-}
-);
-
-}
-
-});
-
-
-
-
-
-
-checkbox.addEventListener("click",(e)=>{
-
-e.stopPropagation();
-
-});
-
-
-
-
-
-
-checkbox.addEventListener("change",()=>{
-
-
-if(checkbox.checked){
-
-layer.addTo(map);
-
-routeData.visible=true;
-
-}
-
-else{
-
-
-map.removeLayer(layer);
-
-routeData.visible=false;
-
-
-
-if(routeData.animationFrame){
-
-cancelAnimationFrame(
-routeData.animationFrame
-);
-
-routeData.animationFrame=null;
-
-}
-
-
-
-if(routeData.animationLayer){
-
-map.removeLayer(
-routeData.animationLayer
-);
-
-routeData.animationLayer=null;
-
-}
-
-}
-
-
-});
-
-
-
-
-
 layer.on("loaded",(e)=>{
 
 
-let layers = e.target.getLayers();
+let layers=e.target.getLayers();
+
 
 
 for(let i=0;i<layers.length;i++){
@@ -628,7 +600,6 @@ break;
 
 }
 
-
 }
 
 
@@ -637,16 +608,210 @@ break;
 if(index===0){
 
 map.fitBounds(
+
 e.target.getBounds(),
+
 {
+
 padding:[40,40]
+
 }
+
 );
 
 }
 
 
 });
+
+
+
+layer.addTo(map);
+
+
+}
+
+
+
+
+routes.forEach((route,index)=>{
+
+
+const routeData = {
+
+
+layer:null,
+
+animationLayer:null,
+
+animationFrame:null,
+
+coordinates:[],
+
+visible:false
+
+
+};
+
+
+
+routeObjects.push(routeData);
+
+
+
+
+
+const label=document.createElement("label");
+
+
+
+const checkbox=document.createElement("input");
+
+
+checkbox.type="checkbox";
+
+
+checkbox.checked=false;
+
+
+
+const text=document.createElement("span");
+
+
+text.textContent=" "+route.name;
+
+
+
+const play=document.createElement("span");
+
+
+play.className="playButton";
+
+
+play.textContent=" [Play]";
+
+
+
+label.appendChild(checkbox);
+
+label.appendChild(text);
+
+label.appendChild(play);
+
+
+
+routeList.appendChild(label);
+
+
+
+
+
+text.addEventListener("click",(e)=>{
+
+
+e.stopPropagation();
+
+
+
+if(routeData.layer && routeData.layer.getBounds().isValid()){
+
+
+map.fitBounds(
+
+routeData.layer.getBounds(),
+
+{
+
+padding:[40,40]
+
+}
+
+);
+
+
+}
+
+
+
+});
+
+
+
+
+
+checkbox.addEventListener("change",()=>{
+
+
+if(checkbox.checked){
+
+
+loadRoute(
+route,
+index,
+routeData
+);
+
+
+routeData.visible=true;
+
+
+}
+
+
+
+else{
+
+
+if(routeData.layer){
+
+
+map.removeLayer(
+routeData.layer
+);
+
+
+}
+
+
+
+routeData.visible=false;
+
+
+
+if(routeData.animationFrame){
+
+
+cancelAnimationFrame(
+routeData.animationFrame
+);
+
+
+routeData.animationFrame=null;
+
+
+}
+
+
+
+if(routeData.animationLayer){
+
+
+map.removeLayer(
+routeData.animationLayer
+);
+
+
+routeData.animationLayer=null;
+
+
+}
+
+
+}
+
+
+});
+
 
 
 
@@ -662,56 +827,88 @@ e.stopPropagation();
 
 
 
-if(!routeData.coordinates || routeData.coordinates.length < 2){
+if(!routeData.coordinates ||
+routeData.coordinates.length < 2){
 
-alert("Route is still loading. Try again in a few seconds.");
+
+if(!routeData.layer){
+
+
+loadRoute(
+route,
+index,
+routeData
+);
+
+
+}
+
+
+
+alert(
+"Route is loading. Press Play again in a few seconds."
+);
+
 
 return;
 
+
 }
 
 
 
 
 
-if(layer.getBounds().isValid()){
+if(routeData.layer &&
+routeData.layer.getBounds().isValid()){
+
 
 map.fitBounds(
-layer.getBounds(),
+
+routeData.layer.getBounds(),
+
 {
+
 padding:[40,40]
+
 }
+
 );
 
+
 }
-
-
 
 
 
 if(!checkbox.checked){
 
+
 checkbox.checked=true;
 
 routeData.visible=true;
 
-}
-
-
-
-
-
-if(map.hasLayer(layer)){
-
-map.removeLayer(layer);
 
 }
 
 
 
 
+if(routeData.layer){
 
-animateRoute(routeData,route);
+
+map.removeLayer(
+routeData.layer
+);
+
+
+}
+
+
+
+animateRoute(
+routeData,
+route
+);
 
 
 
@@ -723,9 +920,49 @@ animateRoute(routeData,route);
 
 
 
-speedLabel.id = "speedControl";
 
-routeMenu.appendChild(speedLabel);
+
+// Load only first few routes at startup
+
+const initialRoutes = 3;
+
+
+for(let i=0;i<initialRoutes;i++){
+
+
+const checkbox =
+routeList.children[i].querySelector("input");
+
+
+checkbox.checked=true;
+
+
+checkbox.dispatchEvent(
+new Event("change")
+);
+
+
+}
+const speedLabel = document.createElement("div");
+
+speedLabel.innerHTML = `
+Play Route in:
+<input
+id="animationSpeed"
+type="number"
+value="5"
+min="1"
+max="300"
+style="width:50px;"
+>
+Seconds
+`;
+
+
+speedControl.appendChild(speedLabel);
+
+
+
 const speedInput =
 document.getElementById("animationSpeed");
 
@@ -736,14 +973,14 @@ speedInput.addEventListener("input",()=>{
 
 if(speedInput.value < 1){
 
-speedInput.value = 1;
+speedInput.value=1;
 
 }
 
 
 if(speedInput.value > 300){
 
-speedInput.value = 300;
+speedInput.value=300;
 
 }
 
@@ -758,14 +995,54 @@ Math.floor(speedInput.value);
 
 
 
+// Minimize / expand menu
+
+const minimizeButton =
+document.getElementById("minimizeButton");
+
+
+
+minimizeButton.addEventListener("click",()=>{
+
+
+routeMenu.classList.toggle("minimized");
+
+
+
+if(routeMenu.classList.contains("minimized")){
+
+
+minimizeButton.textContent="▲";
+
+
+}
+
+else{
+
+
+minimizeButton.textContent="▼";
+
+
+}
+
+
+});
+
+
+
+
+
 // Flatten GPX multi-segment tracks into one continuous route
 
 function flattenCoordinates(coords){
 
-let result = [];
+
+let result=[];
+
 
 
 function recurse(arr){
+
 
 arr.forEach(item=>{
 
@@ -793,14 +1070,15 @@ result.push(item);
 }
 
 
+
 recurse(coords);
+
 
 
 return result;
 
+
 }
-
-
 
 
 
@@ -812,9 +1090,11 @@ function animateRoute(routeData,route){
 
 if(routeData.animationLayer){
 
+
 map.removeLayer(
 routeData.animationLayer
 );
+
 
 }
 
@@ -822,18 +1102,22 @@ routeData.animationLayer
 
 if(routeData.animationFrame){
 
+
 cancelAnimationFrame(
 routeData.animationFrame
 );
+
 
 }
 
 
 
 
-
 const animatedLine =
-L.polyline([],{
+L.polyline([],
+
+{
+
 
 color:route.color,
 
@@ -841,7 +1125,9 @@ weight:6,
 
 opacity:1
 
-}).addTo(map);
+}
+
+).addTo(map);
 
 
 
@@ -856,8 +1142,6 @@ direction:"top"
 
 
 
-
-
 routeData.animationLayer =
 animatedLine;
 
@@ -869,15 +1153,12 @@ routeData.coordinates;
 
 
 
-
 const duration =
 Number(speedInput.value) * 1000;
 
 
 
-
-let startTime = null;
-
+let startTime=null;
 
 
 
@@ -888,16 +1169,18 @@ function animate(timestamp){
 
 if(!startTime){
 
-startTime = timestamp;
+
+startTime=timestamp;
+
 
 }
 
 
 
 
-const progress = Math.min(
+const progress=Math.min(
 
-(timestamp - startTime) / duration,
+(timestamp-startTime)/duration,
 
 1
 
@@ -907,9 +1190,9 @@ const progress = Math.min(
 
 
 
-const index = Math.floor(
+const index=Math.floor(
 
-progress * (points.length - 1)
+progress*(points.length-1)
 
 );
 
@@ -921,7 +1204,7 @@ animatedLine.setLatLngs(
 
 points.slice(
 0,
-index + 1
+index+1
 )
 
 );
@@ -930,8 +1213,7 @@ index + 1
 
 
 
-
-if(progress < 1){
+if(progress<1){
 
 
 routeData.animationFrame =
@@ -943,7 +1225,7 @@ requestAnimationFrame(animate);
 else{
 
 
-routeData.animationFrame = null;
+routeData.animationFrame=null;
 
 
 }
@@ -967,17 +1249,17 @@ requestAnimationFrame(animate);
 
 
 
-
-
 routeMenu.addEventListener(
+
 "mousedown",
+
 function(e){
 
 e.stopPropagation();
 
-});
+}
 
-
+);
 
 
 
@@ -985,13 +1267,16 @@ e.stopPropagation();
 
 window.addEventListener("resize",()=>{
 
+
 map.invalidateSize();
+
 
 });
 
 
-
 </script>
 
+
 </body>
+
 </html>
