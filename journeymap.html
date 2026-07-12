@@ -70,7 +70,7 @@ header button:hover {
 
   background: rgba(255,255,255,0.9);
 
-  padding: 10px;
+padding: 10px 10px 5px 10px;
   border-radius: 6px;
 
   z-index: 1000;
@@ -79,16 +79,48 @@ header button:hover {
   flex-direction: column;
 
   max-height: 350px;
-  overflow-y: auto;
 
   font-size: 14px;
+
 }
 
+
+#routeList {
+
+  overflow-y: auto;
+
+  overflow-x: hidden;
+
+  max-height: 285px;
+
+}
+
+
+#speedControl {
+
+  flex-shrink: 0;
+
+  padding-top: 5px;
+
+  margin-top: 5px;
+
+  margin-bottom: 0px;
+
+}
 #routeMenu label {
+
+  display: block;
+
+  width: 100%;
+
   margin-bottom: 6px;
-  cursor: pointer;
-  user-select: none;
+
+  cursor:pointer;
+
+  user-select:none;
+
   white-space: nowrap;
+
 }
 
 #routeMenu span {
@@ -190,84 +222,85 @@ const routes = [
 
 {
  name:"Apr_12_2026_2_12_54_PM_spring",
- file:"Apr_12_2026_2_12_54_PM_spring.gpx",
+ file:"Apr_12,_2026_2_12_54_PM_spring.gpx",
  color:"#ff0000"
 },
 
 {
  name:"Feb_13_2026_5_42_33_AM_4_concerts_and_cherry_blossom",
- file:"Feb_13_2026_5_42_33_AM_4_concerts_and_cherry_blossom.gpx",
+ file:"Feb_13,_2026_5_42_33_AM_4_concerts_and_cherry_blossom.gpx",
  color:"#009900"
 },
 
 {
  name:"Nov_28_2025_7_51_40_AM_autumn_with_family",
- file:"Nov_28_2025_7_51_40_AM_autumn_with_family.gpx",
+ file:"Nov_28,_2025_7_51_40_AM_autumn_with_family.gpx",
  color:"#0066ff"
 },
 
 {
  name:"Oct_24_2024_10_08_50_PM",
- file:"Oct_24_2024_10_08_50_PM.gpx",
+ file:"Oct_24,_2024_10_08_50_PM.gpx",
  color:"#9900ff"
 },
 
 {
  name:"Oct_3_2024_11_14_45_PM_kyoto_nagasaki",
- file:"Oct_3_2024_11_14_45_PM_kyoto_nagasaki.gpx",
+ file:"Oct_3,_2024_11_14_45_PM_kyoto_nagasaki.gpx",
  color:"#ff6600"
 },
 
 {
  name:"Oct_3_2024_11_14_45_PM",
- file:"Oct_3_2024_11_14_45_PM.gpx",
+ file:"Oct_3,_2024_11_14_45_PM.gpx",
  color:"#cc0000"
 },
 
 {
  name:"Sep_23_2024_4_10_18_PM_kawasaki_tire_park",
- file:"Sep_23_2024_4_10_18_PM_kawasaki_tire_park.gpx",
+ file:"Sep_23,_2024_4_10_18_PM_kawasaki_tire_park.gpx",
  color:"#00aaaa"
 },
 
 {
  name:"Aug_15_2024_5_24_27_PM_from_nakano",
- file:"Aug_15_2024_5_24_27_PM_from_nakano.gpx",
+ file:"Aug_15,_2024_5_24_27_PM_from_nakano.gpx",
  color:"#aaaa00"
 },
 
 {
  name:"Aug_2_2024_10_19_58_PM_with_kei_yong_to_pachinko_parking_lot",
- file:"Aug_2_2024_10_19_58_PM_with_kei_yong_to_pachinko_parking_lot.gpx",
+ file:"Aug_2,_2024_10_19_58_PM_with_kei_yong_to_pachinko_parking_lot.gpx",
  color:"#0088ff"
 },
 
 {
  name:"Aug_1_2024_6_36_17_PM_after_sushiro_walking_home",
- file:"Aug_1_2024_6_36_17_PM_after_sushiro_walking_home.gpx",
+ file:"Aug_1,_2024_6_36_17_PM_after_sushiro_walking_home.gpx",
  color:"#ff0088"
 },
 
 {
  name:"May_12_2024_5_36_50_AM_center_w_harry",
- file:"May_12_2024_5_36_50_AM_center_w_harry.gpx",
+ file:"May_12,_2024_5_36_50_AM_center_w_harry.gpx",
  color:"#00aa44"
 },
 
 {
  name:"May_11_2024_9_51_45_PM_walk_with_alex_hiyoshi_honcho",
- file:"May_11_2024_9_51_45_PM_walk_with_alex_hiyoshi_honcho.gpx",
+ file:"May_11,_2024_9_51_45_PM_walk_with_alex_hiyoshi_honcho.gpx",
  color:"#4444ff"
 },
 
 {
  name:"Mar_16_2024_10_07_35_AM_shimanami_kaido_biking",
- file:"Mar_16_2024_10_07_35_AM_shimanami_kaido_biking.gpx",
+ file:"Mar_16,_2024_10_07_35_AM_shimanami_kaido_biking.gpx",
  color:"#ff4444"
 },
+
 {
  name:"Feb_15_2024_9_28_51_AM_end_of_tsurumi_w_noah",
- file:"Feb_15_2024_9_28_51_AM_end_of_tsurumi_w_noah.gpx",
+ file:"Feb_15,_2024_9_28_51_AM_end_of_tsurumi_w_noah.gpx",
  color:"#6600cc"
 },
 
@@ -317,20 +350,16 @@ const routes = [
  name:"Nov_29_2023_12_49_36_PM_to_center",
  file:"Nov_29,_2023_12_49_36_PM_to_center.gpx",
  color:"#9999ff"
-},
-
-{
- name:"Tsurumi",
- file:"tsurumi.gpx",
- color:"#9999ff"
 }
 
 ];
 
 
 
-const routeMenu =
-document.getElementById("routeMenu");
+const routeList = document.createElement("div");
+routeList.id = "routeList";
+
+routeMenu.appendChild(routeList);
 
 
 
@@ -484,7 +513,7 @@ label.appendChild(play);
 
 
 
-routeMenu.appendChild(label);
+routeList.appendChild(label);
 
 
 
@@ -693,6 +722,8 @@ animateRoute(routeData,route);
 });
 
 
+
+speedLabel.id = "speedControl";
 
 routeMenu.appendChild(speedLabel);
 const speedInput =
