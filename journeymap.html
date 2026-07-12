@@ -183,7 +183,7 @@ document.getElementById("routeMenu");
 
 const speedLabel = document.createElement("label");
 
-speedLabel.style.marginTop = "5x";
+speedLabel.style.marginTop = "2px";
 
 speedLabel.innerHTML = `
   Play Route in:
@@ -208,10 +208,6 @@ const routeObjects = [];
 
 L.DomEvent.disableClickPropagation(routeMenu);
 L.DomEvent.disableScrollPropagation(routeMenu);
-
-
-// Add speed control after routes are created
-// so it appears below the checkboxes
 
 
 // Load each GPX route
@@ -278,7 +274,6 @@ routes.forEach((route, index) => {
 
   // Create menu item
 
-
   const label = document.createElement("label");
 
 
@@ -321,6 +316,7 @@ routes.forEach((route, index) => {
 
 
   routeMenu.appendChild(label);
+
 
 
 
@@ -445,6 +441,24 @@ routes.forEach((route, index) => {
 
 
 
+    // Turn route back on if hidden
+
+    if(!checkbox.checked){
+
+
+      checkbox.checked = true;
+
+
+      layer.addTo(map);
+
+
+      routeData.visible = true;
+
+
+    }
+
+
+
     if(routeData.coordinates.length === 0){
 
 
@@ -466,6 +480,7 @@ routes.forEach((route, index) => {
 
 
 });
+
 
 
 // Add animation speed control underneath routes
@@ -511,6 +526,16 @@ function animateRoute(routeData, route){
     map.removeLayer(routeData.animationLayer);
 
     routeData.animationLayer = null;
+
+  }
+
+
+
+  // Hide original GPX route while animation plays
+
+  if(routeData.layer){
+
+    map.removeLayer(routeData.layer);
 
   }
 
@@ -605,6 +630,16 @@ function animateRoute(routeData, route){
 
 
       routeData.playing = false;
+
+
+
+      // Restore normal GPX route after animation finishes
+
+      if(routeData.visible){
+
+        routeData.layer.addTo(map);
+
+      }
 
 
     }
