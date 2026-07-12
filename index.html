@@ -204,9 +204,28 @@ html, body {
   height: 20px;
   line-height: 20px;
   box-sizing: border-box;
+  white-space: nowrap;
 }
 
-#speedControl input {
+#speedControl label {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  width: auto;
+  margin-bottom: 0;
+  cursor: pointer;
+  user-select: none;
+  white-space: nowrap;
+  font-size: inherit;
+}
+
+#speedControl input[type="checkbox"] {
+  height: 14px;
+  width: 14px;
+  margin: 0;
+}
+
+#speedControl input[type="number"] {
   height: 16px;
   padding: 0 2px;
   box-sizing: border-box;
@@ -397,6 +416,7 @@ header button:hover {
 <a href="index.html"><button>Home</button></a>
 <a href="matsuya.html"><button>Matsuya</button></a>
 <a href="concerts.html"><button>Concerts</button></a>
+<a href="journeymap.html"><button>JourneyMap</button></a>
 <a href="legendary.html"><button>Legendary</button></a>
 </header>
 
@@ -999,6 +1019,30 @@ updateMarkerVisibility();
 // JOURNEYMAP ROUTES (lazy-loaded, none rendered by default)
 // =======================
 
+function setSideMenuMinimized(minimized){
+
+  const menu = document.getElementById("sideMenu");
+  const btn = document.getElementById("minimizeButton");
+
+  if(!menu || !btn){
+    return;
+  }
+
+  if(minimized){
+
+    menu.classList.add("minimized");
+    btn.textContent = "▲";
+
+  }
+  else{
+
+    menu.classList.remove("minimized");
+    btn.textContent = "▼";
+
+  }
+
+}
+
 const routeList = document.getElementById("routeList");
 
 const routes = [
@@ -1275,7 +1319,23 @@ function loadRoute(route,routeData,show){
         map.removeLayer(routeData.layer);
       }
 
-      animateRoute(routeData,route);
+      const hideMapCheckbox =
+        document.getElementById("hideMapDuringAnimation");
+
+      if(hideMapCheckbox && hideMapCheckbox.checked){
+
+        setSideMenuMinimized(true);
+
+        animateRoute(routeData,route,()=>{
+          setSideMenuMinimized(false);
+        });
+
+      }
+      else{
+
+        animateRoute(routeData,route);
+
+      }
 
     }
 
@@ -1467,7 +1527,23 @@ routes.forEach((route)=>{
     }
 
 
-    animateRoute(routeData,route);
+    const hideMapCheckbox =
+      document.getElementById("hideMapDuringAnimation");
+
+    if(hideMapCheckbox && hideMapCheckbox.checked){
+
+      setSideMenuMinimized(true);
+
+      animateRoute(routeData,route,()=>{
+        setSideMenuMinimized(false);
+      });
+
+    }
+    else{
+
+      animateRoute(routeData,route);
+
+    }
 
   });
 
@@ -1480,8 +1556,12 @@ routes.forEach((route)=>{
 
 const speedLabel = document.createElement("div");
 
+speedLabel.style.display = "flex";
+speedLabel.style.alignItems = "center";
+speedLabel.style.gap = "6px";
+
 speedLabel.innerHTML = `
-Play Route in:
+<span>Play Route in:</span>
 <input
 id="animationSpeed"
 type="number"
@@ -1490,7 +1570,11 @@ min="1"
 max="300"
 style="width:50px;"
 >
-Seconds
+<span>Seconds</span>
+<label for="hideMapDuringAnimation" style="margin-left:20px;">
+<input type="checkbox" id="hideMapDuringAnimation">
+Hide menu during animation
+</label>
 `;
 
 
@@ -1554,7 +1638,7 @@ function flattenCoordinates(coords){
 }
 
 
-function animateRoute(routeData,route){
+function animateRoute(routeData,route,onComplete){
 
   if(routeData.animationLayer){
 
@@ -1656,6 +1740,12 @@ function animateRoute(routeData,route){
     else{
 
       routeData.animationFrame=null;
+
+      if(typeof onComplete === "function"){
+
+        onComplete();
+
+      }
 
     }
 
