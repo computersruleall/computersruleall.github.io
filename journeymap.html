@@ -566,7 +566,11 @@ function loadRoute(route,index,routeData){
 
 if(routeData.layer){
 
-return;
+    if(!map.hasLayer(routeData.layer)){
+        routeData.layer.addTo(map);
+    }
+
+    return;
 
 }
 
@@ -1149,12 +1153,13 @@ L.polyline([],
 
 {
 
-
 color:route.color,
 
-weight:6,
+weight:3,
 
-opacity:1
+opacity:0.85,
+
+smoothFactor:2
 
 }
 
