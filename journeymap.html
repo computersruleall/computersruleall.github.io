@@ -225,7 +225,7 @@ header button:hover {
 
   cursor:pointer;
 
-  font-size:11px;
+  font-size:16px;
 
   line-height:15px;
 
@@ -235,7 +235,47 @@ header button:hover {
 
 }	
 
+#routeMenu.minimized {
 
+  padding:10px;
+
+  background:transparent;
+
+  border-radius:6px;
+
+  max-height:none;
+
+}
+
+
+#routeMenu.minimized #menuBottom {
+
+  margin:0;
+
+}
+
+
+#routeMenu.minimized #minimizeButton {
+
+  margin:0;
+
+}
+
+
+
+#routeMenu.minimized #menuBottom {
+
+  margin:0;
+
+}
+
+
+
+#routeMenu.minimized #minimizeButton {
+
+  display:block;
+
+}
 
 #minimizeButton:hover {
 
@@ -348,7 +388,9 @@ header button {
 
 
 <script>
-const map = L.map('map').setView(
+const map = L.map('map',{
+    preferCanvas:true
+}).setView(
   [36.2048,138.2529],
   5
 );
@@ -537,13 +579,10 @@ async:true,
 markers:false,
 
 polyline_options:{
-
-color:route.color,
-
-weight:4,
-
-opacity:0.9
-
+    color:route.color,
+    weight:3,
+    opacity:0.85,
+    smoothFactor:2
 },
 
 marker_options:{
@@ -577,6 +616,7 @@ direction:"top"
 
 
 layer.on("loaded",(e)=>{
+
 
 
 let layers=e.target.getLayers();
@@ -627,6 +667,7 @@ padding:[40,40]
 
 
 layer.addTo(map);
+routeData.visible = true;
 
 
 }
@@ -671,7 +712,7 @@ const checkbox=document.createElement("input");
 checkbox.type="checkbox";
 
 
-checkbox.checked=false;
+checkbox.checked=true;
 
 
 
@@ -922,27 +963,17 @@ route
 
 
 
-// Load only first few routes at startup
+// Load all routes once, keep them visible
 
-const initialRoutes = 3;
+let loadedCount = 0;
 
+routes.forEach((route,index)=>{
 
-for(let i=0;i<initialRoutes;i++){
+    const routeData = routeObjects[index];
 
+    loadRoute(route,index,routeData);
 
-const checkbox =
-routeList.children[i].querySelector("input");
-
-
-checkbox.checked=true;
-
-
-checkbox.dispatchEvent(
-new Event("change")
-);
-
-
-}
+});
 const speedLabel = document.createElement("div");
 
 speedLabel.innerHTML = `
