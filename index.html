@@ -162,12 +162,12 @@ html, body {
 .playButton {
   margin-left: 8px;
   cursor: pointer;
-  color: #008000;
+  color: #0066cc;
   font-weight: bold;
 }
 
 .playButton:hover {
-  color: #004d00;
+  color: #004999;
   text-decoration: underline;
 }
 
@@ -397,7 +397,6 @@ header button:hover {
 <a href="index.html"><button>Home</button></a>
 <a href="matsuya.html"><button>Matsuya</button></a>
 <a href="concerts.html"><button>Concerts</button></a>
-<a href="journeymap.html"><button>JourneyMap</button></a>
 <a href="legendary.html"><button>Legendary</button></a>
 </header>
 
@@ -1166,12 +1165,17 @@ const routes = [
 const routeObjects = [];
 
 
-function loadRoute(route,routeData){
+function loadRoute(route,routeData,show){
+
+  if(show === undefined){
+    show = true;
+  }
 
   if(routeData.layer){
 
-    if(!map.hasLayer(routeData.layer)){
+    if(show && !map.hasLayer(routeData.layer)){
       routeData.layer.addTo(map);
+      routeData.visible = true;
     }
 
     return;
@@ -1238,11 +1242,50 @@ function loadRoute(route,routeData){
 
     }
 
+
+    // If Play was pressed before this route had ever been
+    // loaded, kick off the animation automatically now that
+    // the GPX data has arrived (no need for a second click,
+    // and nothing was shown on the map in the meantime).
+    if(routeData.pendingPlay){
+
+      routeData.pendingPlay = false;
+
+      if(routeData.checkbox && !routeData.checkbox.checked){
+        routeData.checkbox.checked = true;
+      }
+
+      if(routeData.layer.getBounds().isValid()){
+
+        map.fitBounds(
+
+          routeData.layer.getBounds(),
+
+          {
+
+            padding:[40,40]
+
+          }
+
+        );
+
+      }
+
+      if(map.hasLayer(routeData.layer)){
+        map.removeLayer(routeData.layer);
+      }
+
+      animateRoute(routeData,route);
+
+    }
+
   });
 
 
-  layer.addTo(map);
-  routeData.visible = true;
+  if(show){
+    layer.addTo(map);
+    routeData.visible = true;
+  }
 
 }
 
@@ -1275,6 +1318,8 @@ routes.forEach((route)=>{
   checkbox.type="checkbox";
 
   checkbox.checked=false;
+
+  routeData.checkbox = checkbox;
 
 
   const text=document.createElement("span");
@@ -1372,15 +1417,16 @@ routes.forEach((route)=>{
     if(!routeData.coordinates ||
       routeData.coordinates.length < 2){
 
+      routeData.pendingPlay = true;
+
       if(!routeData.layer){
 
-        loadRoute(route,routeData);
+        // Fetch the GPX data quietly (show=false) - the route
+        // will NOT appear on the map until it's actually ready
+        // to animate, and the checkbox stays unchecked until then.
+        loadRoute(route,routeData,false);
 
       }
-
-      alert(
-        "Route is loading. Press Play again in a few seconds."
-      );
 
       return;
 
