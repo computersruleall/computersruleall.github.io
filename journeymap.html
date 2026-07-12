@@ -1,17 +1,92 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Routes</title>
-
-  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css"/>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Interactive Japan Map with Filtering and Images</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
 
   <style>
-    body {
-      font-family: Arial, sans-serif;
+    html, body {
       margin: 0;
+      padding: 0;
+    }
+
+    #map {
+      width: 1200px;
+      height: 600px;
+      border: 1px solid black;
+      position: relative;
+      margin-left: auto;
+      margin-right: auto;
+	  margin: 15px auto;	  
+    }
+
+    .custom-marker {
+      width: 15px;
+      height: 15px;
+      background-color: red;
+      border-radius: 50%;
+      border: 1px solid black;
+      transition: transform 0.2s ease;
+      transform-origin: center center;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .custom-marker.clicked,
+    .custom-marker:hover {
+      transform: scale(1.2);
+    }
+
+    .info-box {
+      position: absolute;
       background: white;
+      padding: 10px;
+      border-radius: 8px;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+      display: none;
+      pointer-events: auto;
+      z-index: 999;
+      min-width: 150px;
+      opacity: 1;
+      margin-top: 0;
+      color: black;
+	  font-size: 16px;
+    }
+
+    .info-box p {
+      margin-top: 0;
+      padding: 0;
+      margin-bottom: 5px;
+    }
+
+    .info-box img {
+      width: auto;
+      height: 250px;
+      display: block;
+      opacity: 1;
+    }
+
+    .leaflet-control-attribution {
+      display: none !important;
+    }
+
+    #filterMenu {
+      position: absolute;
+      bottom: 10px;
+      right: 10px;
+      background: rgba(255, 255, 255, 0.7);
+      padding: 10px;
+      border-radius: 5px;
+      z-index: 1000;
+      display: flex;
+      flex-direction: column;
+    }
+
+    #filterMenu label {
+      margin-bottom: 5px;
     }
 
     header {
@@ -20,6 +95,7 @@
       display: flex;
       gap: 10px;
       justify-content: center;
+      align-items: center;
     }
 
     header a {
@@ -39,513 +115,222 @@
     header button:hover {
       background: #2f89e0;
     }
-
-    #map {
-      width: 1200px;
-      height: 700px;
-      border: 1px solid black;
-      margin: 30px auto;
-      position: relative;
-    }
-
-    .leaflet-control-attribution {
-      display: none !important;
-    }
-
-
-    #routeMenu {
-      position: absolute;
-      bottom: 10px;
-      right: 10px;
-
-      background: rgba(255,255,255,0.9);
-
-      padding: 10px;
-      border-radius: 6px;
-
-      z-index: 1000;
-
-      display: flex;
-      flex-direction: column;
-
-      max-height: 350px;
-      overflow-y: auto;
-
-      font-size: 14px;
-    }
-
-
-    #routeMenu label {
-      margin-bottom: 6px;
-      cursor: pointer;
-      user-select: none;
-      white-space: nowrap;
-    }
-
-
-    #routeMenu span {
-      cursor: pointer;
-      color: #0056b3;
-    }
-
-
-    #routeMenu span:hover {
-      color: #003d80;
-      text-decoration: underline;
-    }
-
-
-    .playButton {
-      margin-left: 8px;
-      cursor: pointer;
-      color: #008000;
-      font-weight: bold;
-    }
-
-
-    .playButton:hover {
-      color: #004d00;
-      text-decoration: underline;
-    }
-
   </style>
 </head>
 
-
 <body>
-
 
 <header>
   <a href="index.html"><button>Home</button></a>
   <a href="matsuya.html"><button>Matsuya</button></a>
   <a href="concerts.html"><button>Concerts</button></a>
-  <a href="routes.html"><button>Routes</button></a>
+  <a href="journeymap.html"><button>JourneyMap</button></a>
 </header>
 
-
 <div id="map">
-
-  <div id="routeMenu"></div>
-
+  <div id="filterMenu">
+    <label><input type="checkbox" id="categoryPhotos" checked> Photos</label>
+    <label><input type="checkbox" id="categoryJourneys" checked> Journeys</label>
+    <label><input type="checkbox" id="categoryTest" checked> Test</label>
+  </div>
 </div>
-
 
 <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet-gpx/1.7.0/gpx.min.js"></script>
-
-
 <script>
+  const map = L.map('map').setView([36.2048, 138.2529], 5);
+  
+  L.DomEvent.disableClickPropagation(document.getElementById('filterMenu'));
+  L.DomEvent.disableScrollPropagation(document.getElementById('filterMenu'));
+
+  L.tileLayer('https://{s}.tile.thunderforest.com/neighbourhood/{z}/{x}/{y}.png?apikey=db5ae1f5778a448ca662554581f283c5', {
+    attribution: '&copy; OpenStreetMap contributors &copy; Thunderforest'
+  }).addTo(map);
+
+  const markersData = [
+    { lat: 36.05346958934558, lng: 138.1225417013597, text: "Tateishi Park", category: "photos", image: "suwa.jpg" },
+    { lat: 35.791204919319576, lng: 139.87161293483373, text: "Mizumoto Park", category: "photos", image: "mizumoto.jpg" },
+    { lat: 35.67050302706143, lng: 139.54681967899265, text: "Jindai Botanical Gardens", category: "photos", image: "jindai.jpg" },
+    { lat: 35.18438669070151, lng: 139.6462977392656, text: "Miura Kaigan", category: "photos", image: "miurakaigan.png" },
+    { lat: 32.72937623854756, lng: 129.86896707161313, text: "Mt. Nabekanmuri Park", category: "photos", image: "nagasaki.jpg" },
+    { lat: 41.328373286467674, lng: 141.08932565296703, text: "Osorezan Bodaiji", category: "photos", image: "bodaiji.jpg" },
+    { lat: 35.015904830170825, lng: 135.6656124421574, text: "Daihaku Senkoji", category: "photos", image: "senkoji.jpg" },
+    { lat: 35.25323529186975, lng: 135.97471297056364, text: "Kita-Komatsu", category: "photos", image: "kitakomatsu.jpg" },
+    { lat: 35.88383416313572, lng: 139.31337546237563, text: "Kinchakuda", category: "photos", image: "kinchakuda.jpg" },
+    { lat: 36.40660161579912, lng: 140.60035055385845, text: "Hitachi Seaside Park (Autumn)", category: "photos", image: "hitachi_1.jpg" },
+    { lat: 36.40716554319468, lng: 140.59343441293572, text: "Hitachi Seaside Park (Spring)", category: "photos", image: "hitachi_2.jpg" },
+    { lat: 36.314145641437, lng: 139.52002772323175, text: "Ashikaga Flower Park", category: "photos", image: "ashikaga.jpg" },
+    { lat: 35.48902344726391, lng: 136.03733594954906, text: "Metasequoia Avenue", category: "photos", image: "avenue.jpg" },
+    { lat: 35.427822414178216, lng: 136.04273148899696, text: "Katsurahama-enchi", category: "photos", image: "katsurahama.jpg" },
+    { lat: 34.98537834574205, lng: 135.75811838407432, text: "100% Exploration", category: "journeys", image: "avenue.jpg" }
+  ];
+
+  let markers = [];
+  const infoBoxes = {};
+  let currentInfoBox = null;
 
 
-const map = L.map('map').setView(
-  [36.2048,138.2529],
-  5
-);
+  markersData.forEach(markerData => {
+
+    const div = document.createElement('div');
+    div.className = 'custom-marker';
+
+    if (markerData.category === 'journeys') {
+      div.style.backgroundColor = '#4da6ff';
+    }
+
+    const divIcon = L.divIcon({
+      className: '',
+      html: div.outerHTML,
+      iconSize: [20, 20],
+      iconAnchor: [10, 10]
+    });
 
 
-
-L.tileLayer(
-'https://{s}.tile.thunderforest.com/neighbourhood/{z}/{x}/{y}.png?apikey=db5ae1f5778a448ca662554581f283c5',
-{
- attribution:'&copy; OpenStreetMap contributors &copy; Thunderforest'
-}
-).addTo(map);
+    const marker = L.marker(
+      [markerData.lat, markerData.lng],
+      { icon: divIcon }
+    ).addTo(map);
 
 
+    const infoBox = document.createElement('div');
 
-// GPX ROUTES
+    infoBox.className = 'info-box';
 
-const routes = [
+    infoBox.innerHTML = `
+      <p>${markerData.text}</p>
+      <img src="${markerData.image}" alt="${markerData.text}">
+    `;
 
-{
- name:"Tsurumi",
- file:"tsurumi.gpx",
- color:"#ff0000"
-},
-
-{
- name:"Mt. Takao",
- file:"gpx/mt-takao.gpx",
- color:"#009900"
-},
-
-{
- name:"Lake Suwa",
- file:"gpx/lake-suwa.gpx",
- color:"#0066ff"
-}
-
-];
+    infoBox.style.display = 'none';
 
 
-
-const routeMenu =
-document.getElementById("routeMenu");
-
-
-// store route information
-
-const routeObjects = [];
+    // Changed from document.body.appendChild()
+    // to keep popup positioning relative to the map
+    document.getElementById('map').appendChild(infoBox);
 
 
-// prevent menu clicks from affecting map
-
-L.DomEvent.disableClickPropagation(routeMenu);
-L.DomEvent.disableScrollPropagation(routeMenu);
+    infoBoxes[`${markerData.lat},${markerData.lng}`] = infoBox;
 
 
-// Load each GPX route
+    marker.category = markerData.category;
+    markers.push(marker);
 
-routes.forEach((route, index) => {
+
+    const updateInfoBoxPosition = () => {
+
+      const pos = map.latLngToContainerPoint(marker.getLatLng());
+
+      infoBox.style.left = `${pos.x - (infoBox.offsetWidth / 2)}px`;
+      infoBox.style.top = `${pos.y + 8}px`;
+
+    };
 
 
-  const routeData = {
-    layer: null,
-    animationLayer: null,
-    coordinates: [],
-    visible: true,
-    playing: false
+    marker.on('mouseover', () => {
+
+      infoBox.style.display = 'block';
+	  
+	  updateInfoBoxPosition();
+
+    });
+
+
+    marker.on('mouseout', () => {
+
+      if (currentInfoBox !== infoBox) {
+        infoBox.style.display = 'none';
+      }
+
+    });
+
+
+    marker.on('click', (e) => {
+
+      e.originalEvent.stopPropagation();
+
+
+      if (currentInfoBox === infoBox) {
+        return;
+      }
+
+
+      if (currentInfoBox) {
+        currentInfoBox.style.display = 'none';
+      }
+
+
+      currentInfoBox = infoBox;
+
+      updateInfoBoxPosition();
+
+      infoBox.style.display = 'block';
+
+    });
+
+
+    map.on('move zoom zoomstart', () => {
+
+      if (currentInfoBox === infoBox) {
+
+        updateInfoBoxPosition();
+
+      }
+
+    });
+
+  });
+  map.on('click', () => {
+
+    currentInfoBox = null;
+
+    document.querySelectorAll('.info-box')
+      .forEach(box => box.style.display = 'none');
+
+  });
+
+
+  const updateMarkerVisibility = () => {
+
+    const hidePhotos = !document.getElementById('categoryPhotos').checked;
+    const hideJourneys = !document.getElementById('categoryJourneys').checked;
+    const hideTest = !document.getElementById('categoryTest').checked;
+
+
+    markers.forEach(marker => {
+
+      if (
+        (hidePhotos && marker.category === 'photos') ||
+        (hideJourneys && marker.category === 'journeys') ||
+        (hideTest && marker.category === 'test')
+      ) {
+
+        map.removeLayer(marker);
+
+      } else {
+
+        marker.addTo(map);
+
+      }
+
+    });
+
   };
 
 
-  routeObjects.push(routeData);
+  document.getElementById('categoryPhotos')
+    .addEventListener('change', updateMarkerVisibility);
 
+  document.getElementById('categoryJourneys')
+    .addEventListener('change', updateMarkerVisibility);
 
+  document.getElementById('categoryTest')
+    .addEventListener('change', updateMarkerVisibility);
 
-  const layer = new L.GPX(route.file, {
 
-    async: true,
-
-
-    polyline_options: {
-
-      color: route.color,
-      weight: 4,
-      opacity: 0.9
-
-    },
-
-
-    marker_options: {
-
-      startIconUrl: null,
-      endIconUrl: null,
-      shadowUrl: null
-
-    }
-
-
-  });
-
-
-  routeData.layer = layer;
-
-
-  layer.addTo(map);
-
-
-
-  // Create menu item
-
-  const label = document.createElement("label");
-
-
-
-  const checkbox = document.createElement("input");
-
-  checkbox.type = "checkbox";
-
-  checkbox.checked = true;
-
-
-
-  const text = document.createElement("span");
-
-  text.textContent = " " + route.name;
-
-
-
-  const play = document.createElement("span");
-
-  play.className = "playButton";
-
-  play.textContent = "[Play]";
-
-
-
-  label.appendChild(checkbox);
-
-  label.appendChild(text);
-
-  label.appendChild(play);
-
-
-
-  routeMenu.appendChild(label);
-
-
-
-
-  // Clicking name zooms to route
-
-  text.addEventListener("click", (e)=>{
-
-
-    e.stopPropagation();
-
-
-    if(layer.getBounds().isValid()){
-
-
-      map.fitBounds(
-        layer.getBounds(),
-        {
-          padding:[40,40]
-        }
-      );
-
-
-    }
-
-
-  });
-
-
-
-
-
-  // Show/hide checkbox
-
-
-  checkbox.addEventListener("click",(e)=>{
-
-    e.stopPropagation();
-
-  });
-
-
-
-  checkbox.addEventListener("change",()=>{
-
-
-    if(checkbox.checked){
-
-
-      layer.addTo(map);
-
-      routeData.visible = true;
-
-
-    }
-
-    else{
-
-
-      map.removeLayer(layer);
-
-      routeData.visible = false;
-
-
-    }
-
-
-  });
-
-
-
-
-
-
-  // When GPX finishes loading
-
-  layer.on("loaded",(e)=>{
-
-
-    routeData.coordinates =
-      e.target.getLayers()[0]
-      .getLatLngs();
-
-
-
-    if(index === 0){
-
-
-      map.fitBounds(
-        e.target.getBounds(),
-        {
-          padding:[40,40]
-        }
-      );
-
-
-    }
-
-
-
-  });
-
-
-
-
-
-  // PLAY BUTTON
-
-  play.addEventListener("click",(e)=>{
-
-
-    e.stopPropagation();
-
-
-    if(routeData.coordinates.length === 0){
-
-      alert("Route is still loading.");
-
-      return;
-
-    }
-
-
-    animateRoute(routeData, route);
-
-
-
-  });
-
-
-
-});
-// Animate route from start to finish
-
-function animateRoute(routeData, route){
-
-
-  // Stop previous animation if one exists
-
-  if(routeData.animationLayer){
-
-    map.removeLayer(routeData.animationLayer);
-
-  }
-
-
-
-  routeData.playing = true;
-
-
-
-  const animatedLine = L.polyline(
-    [],
-    {
-      color: route.color,
-      weight: 6,
-      opacity: 1
-    }
-  ).addTo(map);
-
-
-
-  routeData.animationLayer = animatedLine;
-
-
-
-  const points = routeData.coordinates;
-
-
-
-  let startTime = null;
-
-
-  const duration = 10000; // 10 seconds
-
-
-
-  function animate(timestamp){
-
-
-    if(!startTime){
-
-      startTime = timestamp;
-
-    }
-
-
-
-    const elapsed =
-      timestamp - startTime;
-
-
-
-    const progress =
-      Math.min(
-        elapsed / duration,
-        1
-      );
-
-
-
-    const currentIndex =
-      Math.floor(
-        progress * (points.length - 1)
-      );
-
-
-
-    animatedLine.setLatLngs(
-      points.slice(
-        0,
-        currentIndex + 1
-      )
-    );
-
-
-
-    if(progress < 1){
-
-
-      requestAnimationFrame(
-        animate
-      );
-
-
-    }
-
-    else{
-
-
-      routeData.playing = false;
-
-
-    }
-
-
-  }
-
-
-
-  requestAnimationFrame(
-    animate
-  );
-
-
-}
-
-
-
-// Keep popup/menu behavior from moving map
-
-routeMenu.addEventListener(
-  "mousedown",
-  function(e){
-
-    e.stopPropagation();
-
-  }
-);
-
-
+  updateMarkerVisibility();
 
 </script>
 
 </body>
-</html> 
+</html>  
