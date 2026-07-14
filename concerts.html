@@ -103,6 +103,50 @@
       width: 600px;
       word-wrap: break-word;
     }
+
+    @media (max-width:700px) {
+
+      header {
+        padding: 8px;
+        gap: 6px;
+        flex-wrap: wrap;
+      }
+
+      header button {
+        padding: 8px 12px;
+        font-size: 14px;
+      }
+
+      h1 {
+        margin-top: 16px;
+        font-size: 22px;
+      }
+
+      table {
+        width: 96vw;
+        font-size: 13px;
+      }
+
+      th,
+      td {
+        padding: 8px 6px;
+      }
+
+      th:first-child,
+      td:first-child {
+        width: auto;
+        white-space: normal;
+      }
+
+      th:nth-child(2),
+      td:nth-child(2),
+      th:nth-child(3),
+      td:nth-child(3) {
+        width: auto;
+        word-break: break-word;
+      }
+
+    }
   </style>
 </head>
 
