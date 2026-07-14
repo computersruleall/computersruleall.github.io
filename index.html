@@ -198,31 +198,16 @@ html, body {
   flex-shrink: 0;
 }
 
-/*
-  .playButton is now a triangle glyph (▶) inside a wider, taller box so it
-  actually meets a phone-friendly tap target. On desktop it also reads more
-  clearly than the previous " [Play]" text link. Kept the same blue palette
-  as the routeLabel below for cohesion.
-*/
 .playButton {
   margin-left: 8px;
   cursor: pointer;
   color: #0066cc;
   font-weight: bold;
-  font-size: 14px;
-  min-width: 32px;
-  min-height: 28px;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  padding: 2px 6px;
-  border-radius: 4px;
-  flex-shrink: 0;
 }
 
 .playButton:hover {
   color: #004999;
-  background: rgba(0,102,204,0.1);
+  text-decoration: underline;
 }
 
 #tutorialButton {
@@ -283,40 +268,6 @@ html, body {
   height: 16px;
   padding: 0 2px;
   box-sizing: border-box;
-}
-
-/*
-  Segmented speed presets — three "Fast / Normal / Slow" chips below the
-  numeric input. The input remains the source of truth (animateRoute reads
-  speedInput.value) and stays visible on desktop. On mobile, CSS in the
-  media query hides the numeric input entirely so touch users just tap chips.
-*/
-#speedPresets {
-  display: flex;
-  gap: 4px;
-  margin-top: 4px;
-  flex-wrap: wrap;
-}
-
-.speedPreset {
-  padding: 4px 10px;
-  border: 1px solid #ccc;
-  background: #f5f5f5;
-  border-radius: 12px;
-  cursor: pointer;
-  font-size: 12px;
-  color: #444;
-  min-height: 28px;
-}
-
-.speedPreset:hover {
-  background: #e8e8e8;
-}
-
-.speedPreset.active {
-  background: #4da6ff;
-  color: white;
-  border-color: #4da6ff;
 }
 
 #menuFooter {
@@ -656,21 +607,9 @@ header button {
 }
 
 /*
-  On mobile the segmented preset chips (#speedPresets) replace the numeric
-  input + "Play Route in:" / "Seconds" spans. The <input> stays in the DOM
-  (its value is still the source of truth read by animateRoute) — only its
-  visual presentation is hidden. #speedPresets is a sibling of the speed
-  label div, so hiding spans inside #speedControl's first child doesn't
-  affect the chip row.
-
-  The scope selector uses :not(#speedPresets *) to make it explicit that
-  chip children are untouched.
+  Speed control row on mobile: no chips anymore, so just let the row wrap
+  onto a second line rather than forcing everything onto one cramped row.
 */
-#speedControl > div:first-child span,
-#speedControl input[type="number"] {
-  display: none;
-}
-/* Keep the "Hide menu during animation" checkbox label visible on its own line. */
 #speedControl > div:first-child {
   flex-wrap: wrap;
 }
@@ -1535,14 +1474,14 @@ const routes = [
  color:"#00ced1"
 },
 {
- name:"May_12_2024_5_36_50_AM_center_w_harry",
- file:"May_12,_2024_5_36_50_AM_center_w_harry.gpx",
+ name:"May_12_2024_5_36_50_AM_center_w__harry",
+ file:"May_12,_2024_5_36_50_AM_center_w__harry.gpx",
  color:"#00aa44"
 },
 
 {
- name:"May_11_2024_9_51_45_PM_walk_with_alex_hiyoshi_honcho",
- file:"May_11,_2024_9_51_45_PM_walk_with_alex_hiyoshi_honcho.gpx",
+ name:"May_11_2024_9_51_45_PM_walk_with_alex__hiyoshi_honcho",
+ file:"May_11,_2024_9_51_45_PM_walk_with_alex__hiyoshi_honcho.gpx",
  color:"#4444ff"
 },
 
@@ -1553,14 +1492,14 @@ const routes = [
 },
 
 {
- name:"Feb_15_2024_9_28_51_AM_end_of_tsurumi_w_noah",
- file:"Feb_15,_2024_9_28_51_AM_end_of_tsurumi_w_noah.gpx",
+ name:"Feb_15_2024_9_28_51_AM_end_of_tsurumi_w__noah",
+ file:"Feb_15,_2024_9_28_51_AM_end_of_tsurumi_w__noah.gpx",
  color:"#6600cc"
 },
 
 {
- name:"Jan_14_2024_8_48_14_AM_sfc_biking_w_ale_x",
- file:"Jan_14,_2024_8_48_14_AM_sfc_biking_w_ale_x.gpx",
+ name:"Jan_14_2024_8_48_14_AM_sfc_biking_w__ale_x",
+ file:"Jan_14,_2024_8_48_14_AM_sfc_biking_w__ale_x.gpx",
  color:"#aa44aa"
 },
 
@@ -1589,8 +1528,8 @@ const routes = [
 },
 
 {
- name:"Nov_30_2023_5_11_10_PM_actually_2_2km_book_off_shinjuku",
- file:"Nov_30,_2023_5_11_10_PM_actually_2_2km_book_off_shinjuku.gpx",
+ name:"Nov_30_2023_5_11_10_PM_actually_2.2km_book_off_shinjuku",
+ file:"Nov_30,_2023_5_11_10_PM_actually_2.2km_book_off_shinjuku.gpx",
  color:"#ff99cc"
 },
 
@@ -1844,17 +1783,13 @@ routes.forEach((route)=>{
   text.textContent=" "+route.name;
 
 
-  // Play button: was a 30 px text link " [Play]", which is well below Apple's
-  // 44 px tap-target minimum. We render a triangle glyph inside a wider span
-  // and let .playButton CSS handle padding/size (see .playButton rule earlier
-  // in the stylesheet). Text-content still says "Play" as an aria fallback
-  // so screen readers/desktop users know what it does; visually only ▶ shows.
+  // Play button: simple compact text link.
   const play=document.createElement("span");
 
   play.className="playButton";
   play.setAttribute("role","button");
   play.setAttribute("aria-label","Play route "+route.name);
-  play.textContent="▶";
+  play.textContent=" [Play]";
 
 
   label.appendChild(checkbox);
@@ -2073,65 +2008,7 @@ speedInput.addEventListener("input",()=>{
   speedInput.value =
     Math.floor(speedInput.value);
 
-  // Keep the segmented preset buttons in sync with any manual edit — if the
-  // user types 3 into the input, the "Fast" chip should reflect that state.
-  syncSpeedPresets();
-
 });
-
-
-// =======================
-// SPEED PRESETS (segmented chips)
-// =======================
-//
-// A <input type="number"> is hostile on mobile — the numeric keypad flashes
-// for a single digit and the tap target is 50 px wide. We add three preset
-// chips below the input that just set speedInput.value to a common duration.
-// The input remains the source of truth so animateRoute() doesn't need to
-// change. On mobile the input itself is hidden via CSS (see the media query)
-// so touch users only see the chips. On desktop both are visible.
-
-const SPEED_PRESETS = [
-  {label:"Fast", seconds:3},
-  {label:"Normal", seconds:5},
-  {label:"Slow", seconds:15}
-];
-
-const speedPresetRow = document.createElement("div");
-speedPresetRow.id = "speedPresets";
-
-SPEED_PRESETS.forEach(preset => {
-  const chip = document.createElement("button");
-  chip.type = "button";
-  chip.className = "speedPreset";
-  chip.textContent = `${preset.label} · ${preset.seconds}s`;
-  chip.dataset.seconds = String(preset.seconds);
-  chip.addEventListener("click",(e)=>{
-    e.stopPropagation();
-    speedInput.value = preset.seconds;
-    syncSpeedPresets();
-  });
-  speedPresetRow.appendChild(chip);
-});
-
-// Insert the chips just after the existing #animationSpeed row, so they
-// share the same footer real estate on the JourneyMap tab.
-speedControl.appendChild(speedPresetRow);
-
-function syncSpeedPresets(){
-  const currentSeconds = Number(speedInput.value);
-  speedPresetRow.querySelectorAll(".speedPreset").forEach(chip => {
-    const seconds = Number(chip.dataset.seconds);
-    if(seconds === currentSeconds){
-      chip.classList.add("active");
-    }
-    else{
-      chip.classList.remove("active");
-    }
-  });
-}
-// Initial sync so "Normal · 5s" starts highlighted (matches default value=5).
-syncSpeedPresets();
 
 
 // Flatten GPX multi-segment tracks into one continuous route
