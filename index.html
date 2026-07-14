@@ -7,6 +7,13 @@
 <title>Blog</title>
 
 <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+<!--
+  leaflet-gesture-handling adds the "use two fingers to move the map" behavior.
+  We only enable it on narrow viewports (see gestureHandling flag on L.map below)
+  so that a one-finger vertical swipe scrolls the page instead of being swallowed
+  by the map. On desktop this has no effect.
+-->
+<link rel="stylesheet" href="https://unpkg.com/leaflet-gesture-handling/dist/leaflet-gesture-handling.min.css" />
 
 <style>
 
@@ -21,6 +28,21 @@ html, body {
   border: 1px solid black;
   position: relative;
   margin: 15px auto;
+}
+
+/*
+  marker-hit is a transparent 44x44 wrapper around the visible 20px .custom-marker
+  dot. It exists purely so that touch users on phones have a proper 44pt tap target
+  (per Apple HIG and Material Design). Visually the map looks identical to the
+  desktop version — only the invisible hit area is larger. The dot centers via
+  flex layout on the wrapper.
+*/
+.marker-hit {
+  width: 44px;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .custom-marker {
@@ -159,16 +181,48 @@ html, body {
   text-decoration: underline;
 }
 
+/*
+  routeSwatch is a tiny colored square that visually keys each row in the
+  JourneyMap route list to the color of that route's polyline on the map.
+  Without it, users have no way to know which line on the map corresponds
+  to which entry in the (long, scrollable) list.
+*/
+.routeSwatch {
+  display: inline-block;
+  width: 12px;
+  height: 12px;
+  margin: 0 2px 0 4px;
+  border: 1px solid rgba(0,0,0,0.25);
+  border-radius: 2px;
+  vertical-align: middle;
+  flex-shrink: 0;
+}
+
+/*
+  .playButton is now a triangle glyph (▶) inside a wider, taller box so it
+  actually meets a phone-friendly tap target. On desktop it also reads more
+  clearly than the previous " [Play]" text link. Kept the same blue palette
+  as the routeLabel below for cohesion.
+*/
 .playButton {
   margin-left: 8px;
   cursor: pointer;
   color: #0066cc;
   font-weight: bold;
+  font-size: 14px;
+  min-width: 32px;
+  min-height: 28px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2px 6px;
+  border-radius: 4px;
+  flex-shrink: 0;
 }
 
 .playButton:hover {
   color: #004999;
-  text-decoration: underline;
+  background: rgba(0,102,204,0.1);
 }
 
 #tutorialButton {
@@ -229,6 +283,40 @@ html, body {
   height: 16px;
   padding: 0 2px;
   box-sizing: border-box;
+}
+
+/*
+  Segmented speed presets — three "Fast / Normal / Slow" chips below the
+  numeric input. The input remains the source of truth (animateRoute reads
+  speedInput.value) and stays visible on desktop. On mobile, CSS in the
+  media query hides the numeric input entirely so touch users just tap chips.
+*/
+#speedPresets {
+  display: flex;
+  gap: 4px;
+  margin-top: 4px;
+  flex-wrap: wrap;
+}
+
+.speedPreset {
+  padding: 4px 10px;
+  border: 1px solid #ccc;
+  background: #f5f5f5;
+  border-radius: 12px;
+  cursor: pointer;
+  font-size: 12px;
+  color: #444;
+  min-height: 28px;
+}
+
+.speedPreset:hover {
+  background: #e8e8e8;
+}
+
+.speedPreset.active {
+  background: #4da6ff;
+  color: white;
+  border-color: #4da6ff;
 }
 
 #menuFooter {
@@ -397,11 +485,194 @@ header button:hover {
   opacity: 1;
 }
 
-@media (max-width:600px){
+@media (max-width:700px){
 
-#sideMenu {
-  max-width: 80vw;
+/*
+  ================================================================
+  MOBILE (<=700px viewport) OVERRIDES
+  ================================================================
+
+  Why this whole block: the default layout is designed for a wide
+  desktop display (78.5vw x 86.5vh map, 190px+ side menu, hover-based
+  info-box). On a phone that layout burns 20% of the viewport in
+  margin, hides half the map behind the side menu, and depends on
+  hover interactions that don't exist on touch. Everything below is
+  gated so that the desktop experience is untouched.
+*/
+
+/*
+  html/body get overscroll-behavior:contain so that iOS Safari doesn't
+  rubber-band the whole page when the user scrolls near the top edge
+  of the map. touch-action on #map (below) hands responsibility to
+  leaflet-gesture-handling for actual map interaction.
+*/
+html, body {
+  overscroll-behavior: contain;
+}
+
+/*
+  Header on mobile: shrink padding and font just enough so all four
+  buttons — Home / Matsuya / Concerts / Legendary — fit on ONE row at
+  a 390 px viewport (iPhone 12-14 width). If a device is even narrower,
+  flex-wrap:wrap lets them break into two rows rather than clip.
+*/
+header {
+  padding: 6px;
+  gap: 4px;
+  flex-wrap: wrap;
+}
+
+header button {
+  padding: 6px 8px;
   font-size: 13px;
+  flex: 0 1 auto;
+}
+
+/*
+  Map fills the entire viewport minus the header. Full-bleed is important
+  on phones — every pixel of visible map counts. The border/margin are
+  desktop-only decoration that would waste space here.
+
+  touch-action: none means the browser hands ALL touch events on the map
+  to Leaflet (which routes them to leaflet-gesture-handling on mobile) —
+  otherwise iOS Safari would try to interpret a two-finger pinch as a
+  page zoom AND a map zoom simultaneously.
+*/
+#map {
+  width: 100vw;
+  height: calc(100vh - 60px);
+  margin: 0;
+  border: none;
+  touch-action: none;
+}
+
+/*
+  Side menu on mobile:
+  - The desktop rule sets min-width: 190px which we must explicitly zero out
+    or the menu refuses to shrink into a narrow viewport.
+  - We cap at 55vw (~215 px at 390 px) so it doesn't cover more than a bit
+    over half the map. On a 320 px viewport it becomes ~176 px, still readable.
+  - The negative-margin bleed on #tabButtons (which lets the tab-bar cover
+    the corners of the rounded menu on desktop) is REMOVED here — that
+    -10 px bleed on both sides was overflowing past the menu's own right
+    edge on mobile and clipping visibly.
+  - #sideMenu label white-space:nowrap from desktop is overridden to allow
+    wrapping so long route names fit the narrower box.
+  - box-sizing: border-box makes the max-width honor the padding, so 55 vw
+    is actually the outermost width, not an inner content width.
+*/
+#sideMenu {
+  min-width: 0;
+  max-width: 55vw;
+  max-height: 50vh;
+  font-size: 12px;
+  padding: 8px;
+  bottom: 8px;
+  right: 8px;
+  box-sizing: border-box;
+}
+
+#tabButtons {
+  margin: -8px -8px 6px -8px;
+}
+
+.tabBtn {
+  padding: 8px 4px;
+  font-size: 11px;
+  min-width: 0;
+}
+
+#tabContent {
+  max-height: 30vh;
+}
+
+#sideMenu label {
+  white-space: normal;
+  word-break: break-word;
+  line-height: 1.4;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+/*
+  Route rows on mobile: labels can be very long (30+ chars). We let the
+  route-name text truncate with ellipsis so the play triangle stays visible
+  at the right end of the row rather than being pushed off the edge.
+*/
+#sideMenu .routeLabel {
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.info-box {
+  max-width: 80vw;
+  font-size: 14px;
+  padding: 8px;
+}
+
+.info-box img {
+  height: auto;
+  max-width: 100%;
+  max-height: 40vh;
+}
+
+#imageOverlay {
+  background: rgba(0,0,0,0.85);
+}
+
+#imageViewer {
+  width: 100vw;
+  height: 100vh;
+  border-radius: 0;
+}
+
+#leftArrow,
+#rightArrow {
+  font-size: 44px;
+  opacity: 0.7;
+}
+
+#leftArrow { left: 10px; }
+#rightArrow { right: 10px; }
+
+#closeViewer {
+  font-size: 34px;
+  top: 4px;
+  right: 12px;
+}
+
+#tutorialBox {
+  right: 8px;
+  left: 8px;
+  width: auto;
+  bottom: auto;
+  top: 70px;
+  font-size: 13px;
+}
+
+/*
+  On mobile the segmented preset chips (#speedPresets) replace the numeric
+  input + "Play Route in:" / "Seconds" spans. The <input> stays in the DOM
+  (its value is still the source of truth read by animateRoute) — only its
+  visual presentation is hidden. #speedPresets is a sibling of the speed
+  label div, so hiding spans inside #speedControl's first child doesn't
+  affect the chip row.
+
+  The scope selector uses :not(#speedPresets *) to make it explicit that
+  chip children are untouched.
+*/
+#speedControl > div:first-child span,
+#speedControl input[type="number"] {
+  display: none;
+}
+/* Keep the "Hide menu during animation" checkbox label visible on its own line. */
+#speedControl > div:first-child {
+  flex-wrap: wrap;
 }
 
 }
@@ -475,8 +746,15 @@ header button:hover {
 
 </div>
 
+<!--
+  Tutorial copy avoids the word "hover" (which has no touch equivalent).
+  Reads correctly on both desktop mice and phone touch: tap or click
+  either works on the pin, and either works on the thumbnail to enlarge.
+  On mobile the viewer supports swipe navigation too (see touch handlers
+  in the script below) but we don't mention it here to keep the tip short.
+-->
 <div id="tutorialBox">
-Click/hover over the pins to view images, click on the images to enlarge!
+Tap a pin to see a photo. Tap the photo to enlarge.
 </div>
 
 <div id="imageOverlay"></div>
@@ -492,10 +770,18 @@ Click/hover over the pins to view images, click on the images to enlarge!
 
 <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet-gpx/1.7.0/gpx.min.js"></script>
+<script src="https://unpkg.com/leaflet-gesture-handling"></script>
 
 <script>
+// Only require two-finger gestures on narrow viewports. On desktop the map
+// behaves as normal (single-click pan/zoom via mouse wheel). This directly
+// solves the "pinch-zoom conflict" — on a phone, a one-finger vertical drag
+// scrolls the page rather than being eaten by map pan.
+const isMobileViewport = window.matchMedia("(max-width:700px)").matches;
+
 const map = L.map('map', {
-  keyboard: false
+  keyboard: false,
+  gestureHandling: isMobileViewport
 }).setView(
   [36.2048,138.2529],
   5
@@ -604,11 +890,19 @@ markersData.forEach(markerData => {
   }
 
 
+  // Wrap the visible dot in a 44x44 transparent hit area. Leaflet's divIcon
+  // makes the whole iconSize rectangle the tap target, so we grow the outer
+  // wrapper to 44x44 (Apple HIG / Material minimum) while the dot itself
+  // stays 20px. anchor is centered so the pin still points at the same lat/lng.
+  const wrapper = document.createElement("div");
+  wrapper.className = "marker-hit";
+  wrapper.appendChild(div);
+
   const icon = L.divIcon({
     className:"",
-    html:div.outerHTML,
-    iconSize:[20,20],
-    iconAnchor:[10,10]
+    html:wrapper.outerHTML,
+    iconSize:[44,44],
+    iconAnchor:[22,22]
   });
 
 
@@ -622,9 +916,40 @@ markersData.forEach(markerData => {
 
   infoBox.className = "info-box";
 
+  // -------------------------------------------------------------------
+  // Image variants (why: photo originals are 3-19 MB each — pathological
+  // on any mobile connection). scripts/resize_photos.py generates:
+  //   thumb/*.jpg   ~300 px wide, ~15-30 KB — used in the info-box card
+  //   med/*.jpg    ~1200 px wide, ~150-350 KB — served by srcset when the
+  //                                             card is large enough (or DPR high)
+  //   originals    used ONLY when the user clicks to open the full-screen viewer
+  // Every variant is a JPEG regardless of source extension, so we normalize the
+  // path suffix to .jpg here. The original filename is preserved in data-full
+  // so the click-to-enlarge handler can find it in imageList without needing
+  // to parse anything out of the img src (which now points at a subfolder).
+  const variantName = markerData.image.replace(/\.[^.]+$/, ".jpg");
+  const thumbSrc = `thumb/${variantName}`;
+  const medSrc = `med/${variantName}`;
+
+  // Notes on the img attributes:
+  //   srcset: 300w and 1200w so the browser picks the smallest file that
+  //           satisfies the current sizes at the current DPR
+  //   sizes:  card is ~80vw on mobile, ~300 px on desktop
+  //   loading="lazy": info-boxes start hidden and are only revealed on tap/hover;
+  //                   lazy means the network fetch is deferred until they're on-screen
+  //   decoding="async": don't block the main thread while decoding
+  //   data-full: the ORIGINAL (unsized) filename — the enlarge handler reads this
   infoBox.innerHTML = `
     <p>${markerData.text}</p>
-    <img src="${markerData.image}" alt="${markerData.text}">
+    <img
+      src="${thumbSrc}"
+      srcset="${thumbSrc} 300w, ${medSrc} 1200w"
+      sizes="(max-width:700px) 80vw, 300px"
+      loading="lazy"
+      decoding="async"
+      alt="${markerData.text}"
+      data-full="${markerData.image}"
+    >
   `;
 
 
@@ -704,6 +1029,9 @@ markersData.forEach(markerData => {
 });
 
 
+// Map click clears any pinned info-box AND resets route focus. On mobile,
+// tapping the empty map is the natural "un-select" affordance since there's
+// no separate close button on the info-box card.
 map.on("click", () => {
 
   currentInfoBox = null;
@@ -714,6 +1042,12 @@ map.on("click", () => {
       box.style.display = "none";
 
     });
+
+  // Only meaningful if focus mode was previously applied — resetRouteFocus
+  // is a no-op when nothing was highlighted, so we can call it unconditionally.
+  if(isMobileViewport){
+    resetRouteFocus();
+  }
 
 });
 // =======================
@@ -754,13 +1088,12 @@ document.addEventListener("click",(e)=>{
     e.target.closest(".info-box")
   ){
 
-    const filename =
-      e.target.src.split("/").pop();
+    const fullName = e.target.dataset.full;
 
 
     currentImageIndex =
       imageList.findIndex(
-        item=>item.image===filename
+        item=>item.image===fullName
       );
 
 
@@ -897,6 +1230,81 @@ largeImage.addEventListener("click",(e)=>{
   e.stopPropagation();
 
 });
+
+
+// =======================
+// TOUCH SWIPE — image viewer
+// =======================
+//
+// Why this exists: on desktop the viewer has left/right arrow buttons and
+// keyboard arrows (see the keydown handler above). On touch devices there
+// are no arrow keys and the arrow buttons only appear on :hover, which
+// touch has no equivalent for. Users expect Instagram/Photos.app gestures:
+//   - horizontal swipe (> 60 px)         -> prev / next
+//   - vertical swipe down (> 100 px)     -> close viewer
+// Wrapped in an IIFE so startX/startY don't leak into the outer scope.
+// touchstart/end are passive because we never call preventDefault — this
+// lets the browser optimize scrolling on the rest of the page.
+(function(){
+
+  let startX = 0;
+  let startY = 0;
+  // tracking prevents multi-finger touches (pinch, etc.) from being
+  // interpreted as swipes. Any secondary finger disables gesture detection
+  // until the next fresh touchstart.
+  let tracking = false;
+
+  imageViewer.addEventListener("touchstart",(e)=>{
+    if(e.touches.length !== 1){
+      tracking = false;
+      return;
+    }
+    startX = e.touches[0].clientX;
+    startY = e.touches[0].clientY;
+    tracking = true;
+  }, {passive:true});
+
+  imageViewer.addEventListener("touchend",(e)=>{
+    if(!tracking){
+      return;
+    }
+    tracking = false;
+    const t = e.changedTouches[0];
+    const dx = t.clientX - startX;
+    const dy = t.clientY - startY;
+
+    // Vertical swipe DOWN dismisses. We require dy dominance so that a
+    // slightly-diagonal horizontal swipe still counts as prev/next.
+    if(Math.abs(dy) > Math.abs(dx) && dy > 100){
+      imageViewer.style.display = "none";
+      imageOverlay.style.display = "none";
+      return;
+    }
+
+    // Horizontal swipe navigates. 60 px is generous enough that an
+    // accidental micro-drag doesn't fire, but small enough that a normal
+    // thumb flick easily crosses it.
+    if(Math.abs(dx) > 60 && Math.abs(dx) > Math.abs(dy)){
+      if(dx < 0){
+        // Swipe LEFT -> next image (finger drags the current image out to
+        // the left, which is the same convention as native carousels).
+        currentImageIndex++;
+        if(currentImageIndex >= imageList.length){
+          currentImageIndex = 0;
+        }
+      }
+      else{
+        currentImageIndex--;
+        if(currentImageIndex < 0){
+          currentImageIndex = imageList.length - 1;
+        }
+      }
+      showImage();
+    }
+
+  }, {passive:true});
+
+})();
 
 
 
@@ -1349,6 +1757,46 @@ function loadRoute(route,routeData,show){
 }
 
 
+// =======================
+// ROUTE FOCUS MODE
+// =======================
+//
+// Why: with 27 GPX routes drawn simultaneously, the map on a small phone
+// screen looks like a bowl of technicolor spaghetti. Tapping a route in the
+// list should visually promote it (bright, thicker) and demote everyone
+// else (very faint) so the user can actually see the one they chose. We
+// only trigger this on mobile — desktop users can see the full set clearly
+// at wider sizes and reordering colors would confuse them.
+//
+// Reset happens on a map click (mirrors the info-box close behavior).
+
+const FOCUS_DIM = { opacity: 0.12, weight: 2 };
+const FOCUS_HIGHLIGHT = { opacity: 0.95, weight: 5 };
+const FOCUS_DEFAULT = { opacity: 0.85, weight: 3 };
+
+function applyRouteFocus(targetRouteData){
+  routeObjects.forEach(rd => {
+    if(!rd.layer){
+      return; // route hasn't been loaded yet — nothing to restyle
+    }
+    if(rd === targetRouteData){
+      rd.layer.setStyle(FOCUS_HIGHLIGHT);
+    }
+    else{
+      rd.layer.setStyle(FOCUS_DIM);
+    }
+  });
+}
+
+function resetRouteFocus(){
+  routeObjects.forEach(rd => {
+    if(rd.layer){
+      rd.layer.setStyle(FOCUS_DEFAULT);
+    }
+  });
+}
+
+
 routes.forEach((route)=>{
 
   const routeData = {
@@ -1381,6 +1829,14 @@ routes.forEach((route)=>{
   routeData.checkbox = checkbox;
 
 
+  // Small colored square next to each route name (why: with 27 routes the
+  // polyline colors on the map become impossible to keep track of otherwise —
+  // the swatch is a visual key that ties the label to the drawn line).
+  const swatch=document.createElement("span");
+  swatch.className="routeSwatch";
+  swatch.style.backgroundColor=route.color;
+
+
   const text=document.createElement("span");
 
   text.className="routeLabel";
@@ -1388,14 +1844,21 @@ routes.forEach((route)=>{
   text.textContent=" "+route.name;
 
 
+  // Play button: was a 30 px text link " [Play]", which is well below Apple's
+  // 44 px tap-target minimum. We render a triangle glyph inside a wider span
+  // and let .playButton CSS handle padding/size (see .playButton rule earlier
+  // in the stylesheet). Text-content still says "Play" as an aria fallback
+  // so screen readers/desktop users know what it does; visually only ▶ shows.
   const play=document.createElement("span");
 
   play.className="playButton";
-
-  play.textContent=" [Play]";
+  play.setAttribute("role","button");
+  play.setAttribute("aria-label","Play route "+route.name);
+  play.textContent="▶";
 
 
   label.appendChild(checkbox);
+  label.appendChild(swatch);
   label.appendChild(text);
   label.appendChild(play);
 
@@ -1420,6 +1883,15 @@ routes.forEach((route)=>{
 
       );
 
+    }
+
+    // FOCUS MODE (mobile-only). On a small map, 20+ visible polylines are
+    // indistinguishable — tapping a route name should visually "single out"
+    // that route by dimming every other loaded polyline. We keep desktop
+    // behavior untouched so a mouse user still sees the whole set at once
+    // when they browse. See resetRouteFocus() for the un-select handler.
+    if(isMobileViewport){
+      applyRouteFocus(routeData);
     }
 
   });
@@ -1601,7 +2073,65 @@ speedInput.addEventListener("input",()=>{
   speedInput.value =
     Math.floor(speedInput.value);
 
+  // Keep the segmented preset buttons in sync with any manual edit — if the
+  // user types 3 into the input, the "Fast" chip should reflect that state.
+  syncSpeedPresets();
+
 });
+
+
+// =======================
+// SPEED PRESETS (segmented chips)
+// =======================
+//
+// A <input type="number"> is hostile on mobile — the numeric keypad flashes
+// for a single digit and the tap target is 50 px wide. We add three preset
+// chips below the input that just set speedInput.value to a common duration.
+// The input remains the source of truth so animateRoute() doesn't need to
+// change. On mobile the input itself is hidden via CSS (see the media query)
+// so touch users only see the chips. On desktop both are visible.
+
+const SPEED_PRESETS = [
+  {label:"Fast", seconds:3},
+  {label:"Normal", seconds:5},
+  {label:"Slow", seconds:15}
+];
+
+const speedPresetRow = document.createElement("div");
+speedPresetRow.id = "speedPresets";
+
+SPEED_PRESETS.forEach(preset => {
+  const chip = document.createElement("button");
+  chip.type = "button";
+  chip.className = "speedPreset";
+  chip.textContent = `${preset.label} · ${preset.seconds}s`;
+  chip.dataset.seconds = String(preset.seconds);
+  chip.addEventListener("click",(e)=>{
+    e.stopPropagation();
+    speedInput.value = preset.seconds;
+    syncSpeedPresets();
+  });
+  speedPresetRow.appendChild(chip);
+});
+
+// Insert the chips just after the existing #animationSpeed row, so they
+// share the same footer real estate on the JourneyMap tab.
+speedControl.appendChild(speedPresetRow);
+
+function syncSpeedPresets(){
+  const currentSeconds = Number(speedInput.value);
+  speedPresetRow.querySelectorAll(".speedPreset").forEach(chip => {
+    const seconds = Number(chip.dataset.seconds);
+    if(seconds === currentSeconds){
+      chip.classList.add("active");
+    }
+    else{
+      chip.classList.remove("active");
+    }
+  });
+}
+// Initial sync so "Normal · 5s" starts highlighted (matches default value=5).
+syncSpeedPresets();
 
 
 // Flatten GPX multi-segment tracks into one continuous route
