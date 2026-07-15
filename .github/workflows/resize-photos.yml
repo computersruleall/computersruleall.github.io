@@ -1,0 +1,116 @@
+# =============================================================================
+# Auto-generate photo variants (thumb/*.jpg and med/*.jpg)
+# =============================================================================
+#
+# WHY this workflow exists:
+#   The site references photos via <img srcset> where the info-box shows a
+#   ~300 px thumb and the click-to-enlarge viewer shows the original. Without
+#   this automation, every time a contributor adds a photo they'd have to
+#   remember to run `python3 scripts/resize_photos.py` locally and commit the
+#   generated files. That's easy to forget, and forgetting means the site
+#   ships broken thumbnails (or worse: multi-megabyte originals inline).
+#
+# WHAT it does:
+#   On every push to main and every PR touching a source photo, this workflow
+#   runs the resize script and commits the resulting thumb/*.jpg and
+#   med/*.jpg files back to the branch.
+#
+# HOW the infinite-loop is avoided:
+#   Two safeguards:
+#     1. `paths:` filter — we only run on changes that could affect variants.
+#        A commit that only touches thumb/ or med/ won't retrigger the workflow.
+#     2. The commit itself includes `[skip ci]` in its message, which most
+#        CI systems (including GitHub Actions) recognize as "don't run me on
+#        this commit." Redundant with #1, but belt-and-braces.
+#
+# HOW it decides whether to commit:
+#   `git status --porcelain thumb med` — if the working tree changed after
+#   the resize step ran, commit those changes. Otherwise exit clean.
+
+name: Resize photos
+
+on:
+  push:
+    branches: [main]
+    # Only trigger on paths that could plausibly need new variants.
+    # Committing to thumb/ or med/ alone (e.g., this workflow's own commit)
+    # is not in this list, so the workflow won't infinite-loop.
+    paths:
+      - "*.jpg"
+      - "*.jpeg"
+      - "*.png"
+      - "scripts/resize_photos.py"
+      - ".github/workflows/resize-photos.yml"
+  pull_request:
+    paths:
+      - "*.jpg"
+      - "*.jpeg"
+      - "*.png"
+      - "scripts/resize_photos.py"
+  workflow_dispatch: {}  # Allow manual runs from the Actions tab.
+
+# The default GITHUB_TOKEN is read-only for pushes; grant write here so the
+# post-resize commit can be pushed back. Scoped to `contents` only — the
+# workflow doesn't need anything else.
+permissions:
+  contents: write
+
+jobs:
+  resize:
+    runs-on: ubuntu-latest
+    steps:
+      # We need the full history so `git commit` can attribute against the
+      # right base. `persist-credentials: true` (default) keeps the token
+      # available for the push step below.
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          # On a PR from a fork, GITHUB_TOKEN can't push back to the fork.
+          # Guarded with an if: on the push step below to skip cleanly in
+          # that case; contributors are asked to run the script locally
+          # for fork-based PRs. In-repo branches (including the site
+          # owner's own branches) work automatically.
+          ref: ${{ github.head_ref || github.ref }}
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      # Pillow is the only dependency of resize_photos.py. Pinning to a major
+      # version is enough — the API we use (Image.open / .resize / .save) has
+      # been stable for years.
+      - name: Install Pillow
+        run: python -m pip install "Pillow>=10,<12"
+
+      - name: Run resize script
+        run: python scripts/resize_photos.py
+
+      # Detect whether the resize produced any changes. Two possibilities:
+      #  - contributor added a new photo:  new thumb/med files appear
+      #  - contributor removed a photo:    orphan variants get pruned
+      # In either case the working tree is now dirty and we should commit.
+      - name: Detect changes
+        id: changes
+        run: |
+          if [[ -n "$(git status --porcelain thumb med)" ]]; then
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      # Only commit + push on push events (not PRs from forks — GITHUB_TOKEN
+      # doesn't have write access to fork refs). PR runs still verify the
+      # script succeeds; the contributor is expected to commit variants
+      # themselves for cross-account PRs.
+      - name: Commit variants
+        if: ${{ steps.changes.outputs.changed == 'true' && github.event_name == 'push' }}
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add thumb med
+          # [skip ci] prevents this bot commit from retriggering the workflow.
+          # The paths: filter above is the primary defense; this is redundant
+          # for safety.
+          git commit -m "chore: regenerate photo variants [skip ci]"
+          git push
