@@ -25,15 +25,17 @@ html, body {
   margin: 15px auto;
 }
 /*
-  marker-hit is a transparent 44x44 wrapper around the visible 20px .custom-marker
-  dot. It exists purely so that touch users on phones have a proper 44pt tap target
-  (per Apple HIG and Material Design). Visually the map looks identical to the
-  desktop version — only the invisible hit area is larger. The dot centers via
-  flex layout on the wrapper.
+  marker-hit is a transparent wrapper around the visible 15px .custom-marker
+  dot, flex-centered so the dot always sits dead-center regardless of the
+  wrapper's size. Its actual width/height are set inline per-marker in JS:
+  44px on mobile (a proper touch tap target, per Apple HIG/Material Design)
+  and a tight 18px on desktop (so mouse hover precisely matches the visible
+  dot instead of triggering from several px away). The values below are
+  just a fallback in case JS hasn't set the inline size yet.
 */
 .marker-hit {
-  width: 44px;
-  height: 44px;
+  width: 18px;
+  height: 18px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -727,18 +729,30 @@ markersData.forEach(markerData => {
   if(markerData.category === "journeys"){
     div.style.backgroundColor = "#4da6ff";
   }
-  // Wrap the visible dot in a 44x44 transparent hit area. Leaflet's divIcon
-  // makes the whole iconSize rectangle the tap target, so we grow the outer
-  // wrapper to 44x44 (Apple HIG / Material minimum) while the dot itself
-  // stays 20px. anchor is centered so the pin still points at the same lat/lng.
+  // Wrap the visible dot in a transparent hit-area wrapper, flex-centered so
+  // the dot always sits dead-center regardless of hit-area size.
+  //
+  // On MOBILE we grow this to 44x44 (Apple HIG / Material minimum tap
+  // target) since a fingertip is much less precise than a mouse cursor.
+  //
+  // On DESKTOP we keep it tight (18x18 — just a couple px bigger than the
+  // 15px dot + its 1px border) instead of also using 44x44. A 44px hit area
+  // on desktop meant the mouse only had to be ANYWHERE within a 44px box
+  // around the dot to trigger "mouseover" and pop the info-box — including
+  // 14+ px to the left/right of the visible dot where nothing appears to
+  // be there. Matching the hit area to the dot's actual visual size fixes
+  // that false-trigger without affecting the mobile tap-target fix.
+  const hitSize = isMobileViewport ? 44 : 18;
   const wrapper = document.createElement("div");
   wrapper.className = "marker-hit";
+  wrapper.style.width = hitSize + "px";
+  wrapper.style.height = hitSize + "px";
   wrapper.appendChild(div);
   const icon = L.divIcon({
     className:"",
     html:wrapper.outerHTML,
-    iconSize:[44,44],
-    iconAnchor:[22,22]
+    iconSize:[hitSize,hitSize],
+    iconAnchor:[hitSize/2,hitSize/2]
   });
   const marker = L.marker(
     [markerData.lat, markerData.lng],
