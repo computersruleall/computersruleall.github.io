@@ -3,9 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-
 <title>Blog</title>
-
 <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
 <!--
   leaflet-gesture-handling adds the "use two fingers to move the map" behavior.
@@ -14,14 +12,11 @@
   by the map. On desktop this has no effect.
 -->
 <link rel="stylesheet" href="https://unpkg.com/leaflet-gesture-handling/dist/leaflet-gesture-handling.min.css" />
-
 <style>
-
 html, body {
   margin: 0;
   padding: 0;
 }
-
 #map {
   width: min(1200px, 78.5vw);
   height: min(600px, 86.5vh);
@@ -29,7 +24,6 @@ html, body {
   position: relative;
   margin: 15px auto;
 }
-
 /*
   marker-hit is a transparent 44x44 wrapper around the visible 20px .custom-marker
   dot. It exists purely so that touch users on phones have a proper 44pt tap target
@@ -44,7 +38,6 @@ html, body {
   align-items: center;
   justify-content: center;
 }
-
 .custom-marker {
   width: 15px;
   height: 15px;
@@ -57,12 +50,10 @@ html, body {
   justify-content: center;
   align-items: center;
 }
-
 .custom-marker.clicked,
 .custom-marker:hover {
   transform: scale(1.2);
 }
-
 .info-box {
   position: absolute;
   background: white;
@@ -76,25 +67,20 @@ html, body {
   color: black;
   font-size: 16px;
 }
-
 .info-box p {
   margin-top: 0;
   margin-bottom: 5px;
 }
-
 .info-box img {
   width: auto;
   height: 250px;
   display: block;
   cursor: pointer;
 }
-
 .leaflet-control-attribution {
   display: none !important;
 }
-
 /* ============ Bottom-right side menu (tabbed) ============ */
-
 #sideMenu {
   position: absolute;
   bottom: 10px;
@@ -110,7 +96,6 @@ html, body {
   font-size: 14px;
   min-width: 190px;
 }
-
 #tabButtons {
   display: flex;
   margin: -10px -10px 8px -10px;
@@ -118,7 +103,6 @@ html, body {
   overflow: hidden;
   flex-shrink: 0;
 }
-
 .tabBtn {
   flex: 1;
   background: #e6e6e6;
@@ -130,34 +114,27 @@ html, body {
   font-weight: bold;
   transition: background 0.15s ease;
 }
-
 .tabBtn:hover {
   background: #d5d5d5;
 }
-
 .tabBtn.active {
   background: #4da6ff;
   color: white;
 }
-
 .tabBtn.active:hover {
   background: #4da6ff;
 }
-
 #tabContent {
   overflow-y: auto;
   overflow-x: hidden;
   max-height: 285px;
 }
-
 .tabPane {
   display: none;
 }
-
 .tabPane.active {
   display: block;
 }
-
 #sideMenu label {
   display: block;
   width: 100%;
@@ -166,21 +143,17 @@ html, body {
   user-select: none;
   white-space: nowrap;
 }
-
 #sideMenu label:last-child {
   margin-bottom: 0;
 }
-
 #sideMenu span.routeLabel {
   cursor: pointer;
   color: #0056b3;
 }
-
 #sideMenu span.routeLabel:hover {
   color: #003d80;
   text-decoration: underline;
 }
-
 /*
   routeSwatch is a tiny colored square that visually keys each row in the
   JourneyMap route list to the color of that route's polyline on the map.
@@ -197,31 +170,26 @@ html, body {
   vertical-align: middle;
   flex-shrink: 0;
 }
-
 .playButton {
   margin-left: 8px;
   cursor: pointer;
   color: #0066cc;
   font-weight: bold;
 }
-
 .playButton:hover {
   color: #004999;
   text-decoration: underline;
 }
-
 #tutorialButton {
   cursor: pointer;
   height: 20px;
   line-height: 20px;
   box-sizing: border-box;
 }
-
 #tutorialButton:hover {
   color: #2f89e0;
   text-decoration: underline;
 }
-
 #tutorialBox {
   display: none;
   position: absolute;
@@ -235,7 +203,6 @@ html, body {
   box-shadow: 0 2px 6px rgba(0,0,0,0.3);
   font-size: 14px;
 }
-
 #speedControl {
   display: flex;
   align-items: center;
@@ -245,7 +212,6 @@ html, body {
   box-sizing: border-box;
   white-space: nowrap;
 }
-
 #speedControl label {
   display: inline-flex;
   align-items: center;
@@ -257,19 +223,16 @@ html, body {
   white-space: nowrap;
   font-size: inherit;
 }
-
 #speedControl input[type="checkbox"] {
   height: 14px;
   width: 14px;
   margin: 0;
 }
-
 #speedControl input[type="number"] {
   height: 16px;
   padding: 0 2px;
   box-sizing: border-box;
 }
-
 #menuFooter {
   display: flex;
   align-items: center;
@@ -278,15 +241,12 @@ html, body {
   border-top: 1px solid rgba(0,0,0,0.15);
   flex-shrink: 0;
 }
-
 .footerPane {
   display: none;
 }
-
 .footerPane.active {
   display: block;
 }
-
 #minimizeButton {
   width: 22px;
   height: 22px;
@@ -301,30 +261,25 @@ html, body {
   flex-shrink: 0;
   margin-left: auto;
 }
-
 #minimizeButton:hover {
   background: #bbb;
 }
-
 #sideMenu.minimized {
   padding: 10px;
   background: transparent;
   border-radius: 6px;
   max-height: none;
 }
-
 #sideMenu.minimized #tabButtons,
 #sideMenu.minimized #tabContent,
 #sideMenu.minimized .footerPane {
   display: none;
 }
-
 #sideMenu.minimized #menuFooter {
   margin-top: 0;
   padding-top: 0;
   border-top: none;
 }
-
 header {
   background: #333;
   padding: 10px 20px;
@@ -333,11 +288,9 @@ header {
   justify-content: center;
   align-items: center;
 }
-
 header a {
   text-decoration: none;
 }
-
 header button {
   background: #4da6ff;
   color: white;
@@ -347,14 +300,10 @@ header button {
   cursor: pointer;
   font-size: 16px;
 }
-
 header button:hover {
   background: #2f89e0;
 }
-
-
 /* Image Viewer */
-
 #imageOverlay {
   display: none;
   position: fixed;
@@ -365,7 +314,6 @@ header button:hover {
   background: rgba(0,0,0,0.35);
   z-index: 1999;
 }
-
 #imageViewer {
   display: none;
   position: fixed;
@@ -380,13 +328,11 @@ header button:hover {
   border-radius: 8px;
   overflow: hidden;
 }
-
 #imageViewer img {
   width: 100%;
   height: 100%;
   object-fit: contain;
 }
-
 #closeViewer {
   position: absolute;
   top: 8px;
@@ -397,11 +343,9 @@ header button:hover {
   color: white;
   z-index: 2001;
 }
-
 #closeViewer:hover {
   color: #4da6ff;
 }
-
 #leftArrow,
 #rightArrow {
   position: absolute;
@@ -416,33 +360,26 @@ header button:hover {
   user-select: none;
   z-index: 2001;
 }
-
 #leftArrow {
   left: 20px;
 }
-
 #rightArrow {
   right: 20px;
 }
-
 #imageViewer:hover #leftArrow,
 #imageViewer:hover #rightArrow {
   opacity: 0.6;
 }
-
 #leftArrow:hover,
 #rightArrow:hover {
   color: #4da6ff;
   opacity: 1;
 }
-
 @media (max-width:700px){
-
 /*
   ================================================================
   MOBILE (<=700px viewport) OVERRIDES
   ================================================================
-
   Why this whole block: the default layout is designed for a wide
   desktop display (78.5vw x 86.5vh map, 190px+ side menu, hover-based
   info-box). On a phone that layout burns 20% of the viewport in
@@ -450,7 +387,6 @@ header button:hover {
   hover interactions that don't exist on touch. Everything below is
   gated so that the desktop experience is untouched.
 */
-
 /*
   html/body get overscroll-behavior:contain so that iOS Safari doesn't
   rubber-band the whole page when the user scrolls near the top edge
@@ -459,8 +395,27 @@ header button:hover {
 */
 html, body {
   overscroll-behavior: contain;
+  height: 100%;
 }
-
+/*
+  Why flexbox instead of a hardcoded "calc(100vh - 60px)": that fixed 60px
+  assumed the header was always exactly 60px tall, but on some phones the
+  header wraps to two rows or renders a few pixels taller, which pushed the
+  map (and everything anchored to its bottom, like the menu's footer/
+  Tutorial/show-hide button) below the visible viewport, forcing a scroll.
+  Using flex-direction:column with #map at flex:1 makes the map always
+  fill exactly whatever space is left after the header, regardless of the
+  header's actual rendered height. 100dvh (dynamic viewport height) is used
+  instead of 100vh so mobile browser chrome (address bar) showing/hiding
+  doesn't cause the same overflow-below-the-fold issue; 100vh is kept as a
+  fallback for older browsers that don't support dvh.
+*/
+body {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  height: 100dvh;
+}
 /*
   Header on mobile: shrink padding and font just enough so all four
   buttons — Home / Matsuya / Concerts / Legendary — fit on ONE row at
@@ -471,32 +426,34 @@ header {
   padding: 6px;
   gap: 4px;
   flex-wrap: wrap;
+  flex-shrink: 0;
 }
-
 header button {
   padding: 6px 8px;
   font-size: 13px;
   flex: 0 1 auto;
 }
-
 /*
-  Map fills the entire viewport minus the header. Full-bleed is important
-  on phones — every pixel of visible map counts. The border/margin are
-  desktop-only decoration that would waste space here.
-
+  Map fills whatever space remains after the header (flex:1 1 auto — see
+  the body{display:flex} rule above). Full-bleed is important on phones —
+  every pixel of visible map counts. The border/margin are desktop-only
+  decoration that would waste space here.
   touch-action: none means the browser hands ALL touch events on the map
   to Leaflet (which routes them to leaflet-gesture-handling on mobile) —
   otherwise iOS Safari would try to interpret a two-finger pinch as a
   page zoom AND a map zoom simultaneously.
+  min-height:0 is required on flex children that contain absolutely
+  positioned content, or some browsers keep the flex item at its content's
+  natural (here: zero) height instead of shrinking/growing to fill the row.
 */
 #map {
-  width: 100vw;
-  height: calc(100vh - 60px);
+  width: 100%;
+  flex: 1 1 auto;
+  min-height: 0;
   margin: 0;
   border: none;
   touch-action: none;
 }
-
 /*
   Side menu on mobile:
   - The desktop rule sets min-width: 190px which we must explicitly zero out
@@ -514,7 +471,7 @@ header button {
 */
 #sideMenu {
   min-width: 0;
-  max-width: 55vw;
+  max-width: 62vw;
   max-height: 50vh;
   font-size: 12px;
   padding: 8px;
@@ -522,21 +479,18 @@ header button {
   right: 8px;
   box-sizing: border-box;
 }
-
 #tabButtons {
   margin: -8px -8px 6px -8px;
 }
-
 .tabBtn {
   padding: 8px 4px;
   font-size: 11px;
   min-width: 0;
+  white-space: nowrap;
 }
-
 #tabContent {
   max-height: 30vh;
 }
-
 #sideMenu label {
   white-space: normal;
   word-break: break-word;
@@ -546,11 +500,10 @@ header button {
   align-items: center;
   gap: 4px;
 }
-
 /*
   Route rows on mobile: labels can be very long (30+ chars). We let the
-  route-name text truncate with ellipsis so the play triangle stays visible
-  at the right end of the row rather than being pushed off the edge.
+  route-name text truncate with ellipsis so the [Play] link stays fully
+  visible at the right end of the row rather than being squeezed.
 */
 #sideMenu .routeLabel {
   flex: 1 1 auto;
@@ -559,44 +512,49 @@ header button {
   text-overflow: ellipsis;
   white-space: nowrap;
 }
-
+/*
+  Without flex-shrink:0 + white-space:nowrap, .playButton (a flex sibling of
+  .routeLabel above) could get squeezed below its own content width when the
+  row is tight, and since it's just text with no width, the browser wraps
+  "[Play]" onto multiple lines (looks like it's rendering vertically) instead
+  of leaving it alone. Giving it flex-shrink:0 keeps it at its natural width
+  and forces .routeLabel (which already has ellipsis truncation) to give up
+  the space instead.
+*/
+#sideMenu .playButton {
+  flex-shrink: 0;
+  white-space: nowrap;
+}
 .info-box {
   max-width: 80vw;
   font-size: 14px;
   padding: 8px;
 }
-
 .info-box img {
   height: auto;
   max-width: 100%;
   max-height: 40vh;
 }
-
 #imageOverlay {
   background: rgba(0,0,0,0.85);
 }
-
 #imageViewer {
   width: 100vw;
   height: 100vh;
   border-radius: 0;
 }
-
 #leftArrow,
 #rightArrow {
   font-size: 44px;
   opacity: 0.7;
 }
-
 #leftArrow { left: 10px; }
 #rightArrow { right: 10px; }
-
 #closeViewer {
   font-size: 34px;
   top: 4px;
   right: 12px;
 }
-
 #tutorialBox {
   right: 8px;
   left: 8px;
@@ -605,7 +563,6 @@ header button {
   top: 70px;
   font-size: 13px;
 }
-
 /*
   Speed control row on mobile: no chips anymore, so just let the row wrap
   onto a second line rather than forcing everything onto one cramped row.
@@ -613,78 +570,52 @@ header button {
 #speedControl > div:first-child {
   flex-wrap: wrap;
 }
-
 }
-
 </style>
-
 </head>
-
 <body>
-
 <header>
 <a href="index.html"><button>Home</button></a>
 <a href="matsuya.html"><button>Matsuya</button></a>
 <a href="concerts.html"><button>Concerts</button></a>
 <a href="legendary.html"><button>Legendary</button></a>
 </header>
-
 <div id="map">
-
 <div id="sideMenu">
-
   <div id="tabButtons">
     <div class="tabBtn active" id="tabBtnPhotos">Photos</div>
     <div class="tabBtn" id="tabBtnJourney">JourneyMap</div>
   </div>
-
   <div id="tabContent">
-
     <div id="photosTab" class="tabPane active">
-
       <label>
       <input type="checkbox" id="categoryPhotos" checked>
       Photos
       </label>
-
       <label>
       <input type="checkbox" id="categoryJourneys" checked>
       Journeys
       </label>
-
       <label>
       <input type="checkbox" id="categoryTest" checked>
       Test
       </label>
-
     </div>
-
     <div id="journeymapTab" class="tabPane">
-
       <div id="routeList"></div>
-
     </div>
-
   </div>
-
   <div id="menuFooter">
-
     <div id="footerPhotos" class="footerPane active">
       <div id="tutorialButton">Tutorial</div>
     </div>
-
     <div id="footerJourney" class="footerPane">
       <div id="speedControl"></div>
     </div>
-
     <button id="minimizeButton">▼</button>
-
   </div>
-
 </div>
-
 </div>
-
 <!--
   Tutorial copy avoids the word "hover" (which has no touch equivalent).
   Reads correctly on both desktop mice and phone touch: tap or click
@@ -695,29 +626,22 @@ header button {
 <div id="tutorialBox">
 Tap a pin to see a photo. Tap the photo to enlarge.
 </div>
-
 <div id="imageOverlay"></div>
-
 <div id="imageViewer">
-
 <span id="closeViewer">×</span>
 <span id="leftArrow">‹</span>
 <img id="largeImage">
 <span id="rightArrow">›</span>
-
 </div>
-
 <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet-gpx/1.7.0/gpx.min.js"></script>
 <script src="https://unpkg.com/leaflet-gesture-handling"></script>
-
 <script>
 // Only require two-finger gestures on narrow viewports. On desktop the map
 // behaves as normal (single-click pan/zoom via mouse wheel). This directly
 // solves the "pinch-zoom conflict" — on a phone, a one-finger vertical drag
 // scrolls the page rather than being eaten by map pan.
 const isMobileViewport = window.matchMedia("(max-width:700px)").matches;
-
 const map = L.map('map', {
   keyboard: false,
   gestureHandling: isMobileViewport
@@ -725,67 +649,51 @@ const map = L.map('map', {
   [36.2048,138.2529],
   5
 );
-
 L.DomEvent.disableClickPropagation(
   document.getElementById('sideMenu')
 );
-
 L.DomEvent.disableScrollPropagation(
   document.getElementById('sideMenu')
 );
-
 L.tileLayer(
   'https://{s}.tile.thunderforest.com/neighbourhood/{z}/{x}/{y}.png?apikey=db5ae1f5778a448ca662554581f283c5',
   {
     attribution:'&copy; OpenStreetMap contributors &copy; Thunderforest'
   }
 ).addTo(map);
-
 // =======================
 // TABS
 // =======================
-
 const tabBtnPhotos = document.getElementById("tabBtnPhotos");
 const tabBtnJourney = document.getElementById("tabBtnJourney");
 const photosTab = document.getElementById("photosTab");
 const journeymapTab = document.getElementById("journeymapTab");
 const footerPhotos = document.getElementById("footerPhotos");
 const footerJourney = document.getElementById("footerJourney");
-
 function activateTab(name){
-
   if(name === "photos"){
-
     tabBtnPhotos.classList.add("active");
     tabBtnJourney.classList.remove("active");
     photosTab.classList.add("active");
     journeymapTab.classList.remove("active");
     footerPhotos.classList.add("active");
     footerJourney.classList.remove("active");
-
   }
   else{
-
     tabBtnJourney.classList.add("active");
     tabBtnPhotos.classList.remove("active");
     journeymapTab.classList.add("active");
     photosTab.classList.remove("active");
     footerJourney.classList.add("active");
     footerPhotos.classList.remove("active");
-
   }
-
 }
-
 tabBtnPhotos.addEventListener("click",()=>{
   activateTab("photos");
 });
-
 tabBtnJourney.addEventListener("click",()=>{
   activateTab("journeymap");
 });
-
-
 const markersData = [
   { lat:36.05346958934558, lng:138.1225417013597, text:"Tateishi Park", category:"photos", image:"suwa.jpg" },
   { lat:35.791204919319576, lng:139.87161293483373, text:"Mizumoto Park", category:"photos", image:"mizumoto.jpg" },
@@ -805,32 +713,20 @@ const markersData = [
   { lat:35.427822414178216, lng:136.04273148899696, text:"Katsurahama-enchi", category:"photos", image:"katsurahama.jpg" },
   { lat:34.98537834574205, lng:135.75811838407432, text:"100% Exploration", category:"journeys", image:"avenue.jpg" }
 ];
-
-
 let markers = [];
 let currentInfoBox = null;
-
 let imageList = [];
 let currentImageIndex = 0;
-
-
 markersData.forEach(markerData => {
-
   imageList.push({
     image: markerData.image,
     title: markerData.text
   });
-
-
   const div = document.createElement("div");
   div.className = "custom-marker";
-
-
   if(markerData.category === "journeys"){
     div.style.backgroundColor = "#4da6ff";
   }
-
-
   // Wrap the visible dot in a 44x44 transparent hit area. Leaflet's divIcon
   // makes the whole iconSize rectangle the tap target, so we grow the outer
   // wrapper to 44x44 (Apple HIG / Material minimum) while the dot itself
@@ -838,25 +734,18 @@ markersData.forEach(markerData => {
   const wrapper = document.createElement("div");
   wrapper.className = "marker-hit";
   wrapper.appendChild(div);
-
   const icon = L.divIcon({
     className:"",
     html:wrapper.outerHTML,
     iconSize:[44,44],
     iconAnchor:[22,22]
   });
-
-
   const marker = L.marker(
     [markerData.lat, markerData.lng],
     {icon:icon}
   ).addTo(map);
-
-
   const infoBox = document.createElement("div");
-
   infoBox.className = "info-box";
-
   // -------------------------------------------------------------------
   // Image variants (why: photo originals are 3-19 MB each — pathological
   // on any mobile connection). scripts/resize_photos.py generates:
@@ -871,7 +760,6 @@ markersData.forEach(markerData => {
   const variantName = markerData.image.replace(/\.[^.]+$/, ".jpg");
   const thumbSrc = `thumb/${variantName}`;
   const medSrc = `med/${variantName}`;
-
   // Notes on the img attributes:
   //   srcset: 300w and 1200w so the browser picks the smallest file that
   //           satisfies the current sizes at the current DPR
@@ -892,287 +780,142 @@ markersData.forEach(markerData => {
       data-full="${markerData.image}"
     >
   `;
-
-
   document.getElementById("map").appendChild(infoBox);
-
-
   marker.category = markerData.category;
   markers.push(marker);
-
-
   const updateInfoBoxPosition = () => {
-
     const pos = map.latLngToContainerPoint(
       marker.getLatLng()
     );
-
     infoBox.style.left =
       `${pos.x - (infoBox.offsetWidth / 2)}px`;
-
     infoBox.style.top =
       `${pos.y + 8}px`;
-
   };
-
-
   marker.on("mouseover", () => {
-
     infoBox.style.display = "block";
-
     updateInfoBoxPosition();
-
   });
-
-
   marker.on("mouseout", () => {
-
     if(currentInfoBox !== infoBox){
-
       infoBox.style.display = "none";
-
     }
-
   });
-
-
   marker.on("click", (e) => {
-
     e.originalEvent.stopPropagation();
-
-
     if(currentInfoBox){
-
       currentInfoBox.style.display = "none";
-
     }
-
-
     currentInfoBox = infoBox;
-
     updateInfoBoxPosition();
-
     infoBox.style.display = "block";
-
   });
-
-
   map.on("move zoom zoomstart", () => {
-
     if(currentInfoBox === infoBox){
-
       updateInfoBoxPosition();
-
     }
-
   });
-
 });
-
-
 // Map click clears any pinned info-box AND resets route focus. On mobile,
 // tapping the empty map is the natural "un-select" affordance since there's
 // no separate close button on the info-box card.
 map.on("click", () => {
-
   currentInfoBox = null;
-
   document.querySelectorAll(".info-box")
     .forEach(box => {
-
       box.style.display = "none";
-
     });
-
   // Only meaningful if focus mode was previously applied — resetRouteFocus
   // is a no-op when nothing was highlighted, so we can call it unconditionally.
   if(isMobileViewport){
     resetRouteFocus();
   }
-
 });
 // =======================
 // IMAGE VIEWER
 // =======================
-
 const imageViewer =
   document.getElementById("imageViewer");
-
 const imageOverlay =
   document.getElementById("imageOverlay");
-
 const largeImage =
   document.getElementById("largeImage");
-
 const closeViewer =
   document.getElementById("closeViewer");
-
 const leftArrow =
   document.getElementById("leftArrow");
-
 const rightArrow =
   document.getElementById("rightArrow");
-
-
 function showImage(){
-
   largeImage.src =
     imageList[currentImageIndex].image;
-
 }
-
-
 document.addEventListener("click",(e)=>{
-
   if(
     e.target.tagName==="IMG" &&
     e.target.closest(".info-box")
   ){
-
     const fullName = e.target.dataset.full;
-
-
     currentImageIndex =
       imageList.findIndex(
         item=>item.image===fullName
       );
-
-
     showImage();
-
     imageViewer.style.display="block";
-
     imageOverlay.style.display="block";
-
   }
-
 });
-
-
 rightArrow.addEventListener("click",(e)=>{
-
   e.stopPropagation();
-
   currentImageIndex++;
-
-
   if(currentImageIndex >= imageList.length){
-
     currentImageIndex = 0;
-
   }
-
-
   showImage();
-
 });
-
-
 leftArrow.addEventListener("click",(e)=>{
-
   e.stopPropagation();
-
   currentImageIndex--;
-
-
   if(currentImageIndex < 0){
-
     currentImageIndex = imageList.length - 1;
-
   }
-
-
   showImage();
-
 });
-
-
 // Keyboard controls
-
 document.addEventListener("keydown",(e)=>{
-
   if(imageViewer.style.display !== "block"){
-
     return;
-
   }
-
-
   if(e.key === "ArrowRight"){
-
     currentImageIndex++;
-
-
     if(currentImageIndex >= imageList.length){
-
       currentImageIndex = 0;
-
     }
-
-
     showImage();
-
   }
-
-
-
   if(e.key === "ArrowLeft"){
-
     currentImageIndex--;
-
-
     if(currentImageIndex < 0){
-
       currentImageIndex = imageList.length - 1;
-
     }
-
-
     showImage();
-
   }
-
-
-
   if(e.key === "Escape"){
-
     imageViewer.style.display="none";
-
     imageOverlay.style.display="none";
-
   }
-
 });
-
-
-
 closeViewer.addEventListener("click",()=>{
-
   imageViewer.style.display="none";
-
   imageOverlay.style.display="none";
-
 });
-
-
-
 imageOverlay.addEventListener("click",()=>{
-
   imageViewer.style.display="none";
-
   imageOverlay.style.display="none";
-
 });
-
-
-
 largeImage.addEventListener("click",(e)=>{
-
   e.stopPropagation();
-
 });
-
-
 // =======================
 // TOUCH SWIPE — image viewer
 // =======================
@@ -1187,14 +930,12 @@ largeImage.addEventListener("click",(e)=>{
 // touchstart/end are passive because we never call preventDefault — this
 // lets the browser optimize scrolling on the rest of the page.
 (function(){
-
   let startX = 0;
   let startY = 0;
   // tracking prevents multi-finger touches (pinch, etc.) from being
   // interpreted as swipes. Any secondary finger disables gesture detection
   // until the next fresh touchstart.
   let tracking = false;
-
   imageViewer.addEventListener("touchstart",(e)=>{
     if(e.touches.length !== 1){
       tracking = false;
@@ -1204,7 +945,6 @@ largeImage.addEventListener("click",(e)=>{
     startY = e.touches[0].clientY;
     tracking = true;
   }, {passive:true});
-
   imageViewer.addEventListener("touchend",(e)=>{
     if(!tracking){
       return;
@@ -1213,7 +953,6 @@ largeImage.addEventListener("click",(e)=>{
     const t = e.changedTouches[0];
     const dx = t.clientX - startX;
     const dy = t.clientY - startY;
-
     // Vertical swipe DOWN dismisses. We require dy dominance so that a
     // slightly-diagonal horizontal swipe still counts as prev/next.
     if(Math.abs(dy) > Math.abs(dx) && dy > 100){
@@ -1221,7 +960,6 @@ largeImage.addEventListener("click",(e)=>{
       imageOverlay.style.display = "none";
       return;
     }
-
     // Horizontal swipe navigates. 60 px is generous enough that an
     // accidental micro-drag doesn't fire, but small enough that a normal
     // thumb flick easily crosses it.
@@ -1242,207 +980,129 @@ largeImage.addEventListener("click",(e)=>{
       }
       showImage();
     }
-
   }, {passive:true});
-
 })();
-
-
-
 // =======================
 // TUTORIAL
 // =======================
-
 const tutorialButton =
   document.getElementById("tutorialButton");
-
 const tutorialBox =
   document.getElementById("tutorialBox");
-
-
 tutorialButton.addEventListener("click",(e)=>{
-
   e.stopPropagation();
-
   if(tutorialBox.style.display === "block"){
-
     tutorialBox.style.display="none";
-
   }
-
   else{
-
     tutorialBox.style.display="block";
-
   }
-
 });
-
-
 tutorialBox.addEventListener("click",(e)=>{
-
   e.stopPropagation();
-
 });
-
-
 document.addEventListener("click",()=>{
-
   tutorialBox.style.display="none";
-
 });
 // =======================
 // CATEGORY FILTERING
 // =======================
-
 function updateMarkerVisibility(){
-
   const hidePhotos =
     !document.getElementById("categoryPhotos").checked;
-
-
   const hideJourneys =
     !document.getElementById("categoryJourneys").checked;
-
-
   const hideTest =
     !document.getElementById("categoryTest").checked;
-
-
-
   markers.forEach(marker=>{
-
     if(
-
       (hidePhotos && marker.category==="photos") ||
-
       (hideJourneys && marker.category==="journeys") ||
-
       (hideTest && marker.category==="test")
-
     ){
-
       map.removeLayer(marker);
-
     }
-
     else{
-
       marker.addTo(map);
-
     }
-
   });
-
 }
-
-
-
 document.getElementById("categoryPhotos")
 .addEventListener(
   "change",
   updateMarkerVisibility
 );
-
-
 document.getElementById("categoryJourneys")
 .addEventListener(
   "change",
   updateMarkerVisibility
 );
-
-
 document.getElementById("categoryTest")
 .addEventListener(
   "change",
   updateMarkerVisibility
 );
-
-
-
 updateMarkerVisibility();
-
-
 // =======================
 // JOURNEYMAP ROUTES (lazy-loaded, none rendered by default)
 // =======================
-
 function setSideMenuMinimized(minimized){
-
   const menu = document.getElementById("sideMenu");
   const btn = document.getElementById("minimizeButton");
-
   if(!menu || !btn){
     return;
   }
-
   if(minimized){
-
     menu.classList.add("minimized");
     btn.textContent = "▲";
-
   }
   else{
-
     menu.classList.remove("minimized");
     btn.textContent = "▼";
-
   }
-
 }
-
 const routeList = document.getElementById("routeList");
-
 const routes = [
-
 {
  name:"To_Sunset_Hill",
  file:"To_Sunset_Hill.gpx",
  color:"#cc6600"
 },
-
 {
  name:"Apr_12_2026_2_12_54_PM_spring",
  file:"Apr_12,_2026_2_12_54_PM_spring.gpx",
  color:"#ff0000"
 },
-
 {
  name:"Feb_13_2026_5_42_33_AM_4_concerts_and_cherry_blossom",
  file:"Feb_13,_2026_5_42_33_AM_4_concerts_and_cherry_blossom.gpx",
  color:"#009900"
 },
-
 {
  name:"Nov_28_2025_7_51_40_AM_autumn_with_family",
  file:"Nov_28,_2025_7_51_40_AM_autumn_with_family.gpx",
  color:"#0066ff"
 },
-
 {
  name:"Oct_24_2024_10_08_50_PM",
  file:"Oct_24,_2024_10_08_50_PM.gpx",
  color:"#9900ff"
 },
-
 {
  name:"Oct_3_2024_11_14_45_PM_kyoto_nagasaki",
  file:"Oct_3,_2024_11_14_45_PM_kyoto_nagasaki.gpx",
  color:"#ff6600"
 },
-
 {
  name:"Oct_3_2024_11_14_45_PM",
  file:"Oct_3,_2024_11_14_45_PM.gpx",
  color:"#cc0000"
 },
-
 {
  name:"Sep_23_2024_4_10_18_PM_kawasaki_tire_park",
  file:"Sep_23,_2024_4_10_18_PM_kawasaki_tire_park.gpx",
  color:"#00aaaa"
 },
-
 {
  name:"Aug_15_2024_5_24_27_PM_from_nakano",
  file:"Aug_15,_2024_5_24_27_PM_from_nakano.gpx",
@@ -1458,7 +1118,6 @@ const routes = [
  file:"Aug_2,_2024_10_19_58_PM_with_kei_yong_to_pachinko_parking_lot.gpx",
  color:"#0088ff"
 },
-
 {
  name:"Aug_1_2024_6_36_17_PM_after_sushiro_walking_home",
  file:"Aug_1,_2024_6_36_17_PM_after_sushiro_walking_home.gpx",
@@ -1469,7 +1128,6 @@ const routes = [
  file:"Jun_15,_2024_9_32_32_AM_tatsuno_hotaru.gpx",
  color:"#8b4513"
 },
-
 {
  name:"Jun_13_2024_1_07_37_PM_sea_broke_his_back",
  file:"Jun_13,_2024_1_07_37_PM_sea_broke_his_back.gpx",
@@ -1480,67 +1138,56 @@ const routes = [
  file:"May_12,_2024_5_36_50_AM_center_w__harry.gpx",
  color:"#00aa44"
 },
-
 {
  name:"May_11_2024_9_51_45_PM_walk_with_alex__hiyoshi_honcho",
  file:"May_11,_2024_9_51_45_PM_walk_with_alex__hiyoshi_honcho.gpx",
  color:"#4444ff"
 },
-
 {
  name:"Mar_16_2024_10_07_35_AM_shimanami_kaido_biking",
  file:"Mar_16,_2024_10_07_35_AM_shimanami_kaido_biking.gpx",
  color:"#ff4444"
 },
-
 {
  name:"Feb_15_2024_9_28_51_AM_end_of_tsurumi_w__noah",
  file:"Feb_15,_2024_9_28_51_AM_end_of_tsurumi_w__noah.gpx",
  color:"#6600cc"
 },
-
 {
  name:"Jan_14_2024_8_48_14_AM_sfc_biking_w__ale_x",
  file:"Jan_14,_2024_8_48_14_AM_sfc_biking_w__ale_x.gpx",
  color:"#aa44aa"
 },
-
 {
  name:"Jan_8_2024_11_12_10_AM_suwa",
  file:"Jan_8,_2024_11_12_10_AM_suwa.gpx",
  color:"#ffaa00"
 },
-
 {
  name:"Jan_4_2024_8_15_58_AM_kamakura",
  file:"Jan_4,_2024_8_15_58_AM_kamakura.gpx",
  color:"#44aa44"
 },
-
 {
  name:"Dec_29_2023_5_19_43_PM_from_ski",
  file:"Dec_29,_2023_5_19_43_PM_from_ski.gpx",
  color:"#006666"
 },
-
 {
  name:"Dec_24_2023_10_28_36_AM_to_hiyoshi_honcho_bookoff",
  file:"Dec_24,_2023_10_28_36_AM_to_hiyoshi_honcho_bookoff.gpx",
  color:"#666600"
 },
-
 {
  name:"Nov_30_2023_5_11_10_PM_actually_2.2km_book_off_shinjuku",
  file:"Nov_30,_2023_5_51_10_PM_actually_22km_book_off_shinjuku.gpx",
  color:"#ff99cc"
 },
-
 {
  name:"Nov_30_2023_3_53_10_PM_missed_bus_and_bookoff",
  file:"Nov_30,_2023_3_53_10_PM_missed_bus_and_bookoff.gpx",
  color:"#009999"
 },
-
 {
  name:"Nov_29_2023_12_49_36_PM_to_center",
  file:"Nov_29,_2023_12_49_36_PM_to_center.gpx",
@@ -1552,152 +1199,88 @@ const routes = [
  color:"#dc143c"
 }
 ];
-
-
 const routeObjects = [];
-
-
 function loadRoute(route,routeData,show){
-
   if(show === undefined){
     show = true;
   }
-
   if(routeData.layer){
-
     if(show && !map.hasLayer(routeData.layer)){
       routeData.layer.addTo(map);
       routeData.visible = true;
     }
-
     return;
-
   }
-
-
   const layer = new L.GPX(route.file,{
-
     async:true,
-
     markers:false,
-
     polyline_options:{
       color:route.color,
       weight:3,
       opacity:0.85,
       smoothFactor:2
     },
-
     marker_options:{
-
       startIconUrl:null,
-
       endIconUrl:null,
-
       shadowUrl:null,
-
       wptIconUrls:[]
-
     }
-
   });
-
-
   routeData.layer = layer;
-
-
   layer.bindTooltip(route.name,{
-
     sticky:true,
-
     direction:"top"
-
   });
-
-
   layer.on("loaded",(e)=>{
-
     let layers=e.target.getLayers();
-
     for(let i=0;i<layers.length;i++){
-
       if(typeof layers[i].getLatLngs==="function"){
-
         routeData.coordinates =
           flattenCoordinates(
             layers[i].getLatLngs()
           );
-
         break;
-
       }
-
     }
-
-
     // If Play was pressed before this route had ever been
     // loaded, kick off the animation automatically now that
     // the GPX data has arrived (no need for a second click,
     // and nothing was shown on the map in the meantime).
     if(routeData.pendingPlay){
-
       routeData.pendingPlay = false;
-
       if(routeData.checkbox && !routeData.checkbox.checked){
         routeData.checkbox.checked = true;
       }
-
       if(routeData.layer.getBounds().isValid()){
-
         map.fitBounds(
-
           routeData.layer.getBounds(),
-
           {
-
             padding:[40,40]
-
           }
-
         );
-
       }
-
       if(map.hasLayer(routeData.layer)){
         map.removeLayer(routeData.layer);
       }
-
       const hideMapCheckbox =
         document.getElementById("hideMapDuringAnimation");
-
       if(hideMapCheckbox && hideMapCheckbox.checked){
-
         setSideMenuMinimized(true);
-
         animateRoute(routeData,route,()=>{
           setSideMenuMinimized(false);
         });
-
       }
       else{
-
         animateRoute(routeData,route);
-
       }
-
     }
-
   });
-
-
   if(show){
     layer.addTo(map);
     routeData.visible = true;
   }
-
 }
-
-
 // =======================
 // ROUTE FOCUS MODE
 // =======================
@@ -1710,11 +1293,9 @@ function loadRoute(route,routeData,show){
 // at wider sizes and reordering colors would confuse them.
 //
 // Reset happens on a map click (mirrors the info-box close behavior).
-
 const FOCUS_DIM = { opacity: 0.12, weight: 2 };
 const FOCUS_HIGHLIGHT = { opacity: 0.95, weight: 5 };
 const FOCUS_DEFAULT = { opacity: 0.85, weight: 3 };
-
 function applyRouteFocus(targetRouteData){
   routeObjects.forEach(rd => {
     if(!rd.layer){
@@ -1728,7 +1309,6 @@ function applyRouteFocus(targetRouteData){
     }
   });
 }
-
 function resetRouteFocus(){
   routeObjects.forEach(rd => {
     if(rd.layer){
@@ -1736,92 +1316,50 @@ function resetRouteFocus(){
     }
   });
 }
-
-
 routes.forEach((route)=>{
-
   const routeData = {
-
     layer:null,
-
     animationLayer:null,
-
     animationFrame:null,
-
     coordinates:[],
-
     visible:false
-
   };
-
-
   routeObjects.push(routeData);
-
-
   const label=document.createElement("label");
-
-
   const checkbox=document.createElement("input");
-
   checkbox.type="checkbox";
-
   checkbox.checked=false;
-
   routeData.checkbox = checkbox;
-
-
   // Small colored square next to each route name (why: with 27 routes the
   // polyline colors on the map become impossible to keep track of otherwise —
   // the swatch is a visual key that ties the label to the drawn line).
   const swatch=document.createElement("span");
   swatch.className="routeSwatch";
   swatch.style.backgroundColor=route.color;
-
-
   const text=document.createElement("span");
-
   text.className="routeLabel";
-
   text.textContent=" "+route.name;
-
-
   // Play button: simple compact text link.
   const play=document.createElement("span");
-
   play.className="playButton";
   play.setAttribute("role","button");
   play.setAttribute("aria-label","Play route "+route.name);
   play.textContent=" [Play]";
-
-
   label.appendChild(checkbox);
   label.appendChild(swatch);
   label.appendChild(text);
   label.appendChild(play);
-
   routeList.appendChild(label);
-
-
   text.addEventListener("click",(e)=>{
-
     e.stopPropagation();
-
     if(routeData.layer && routeData.layer.getBounds().isValid()){
-
       map.fitBounds(
-
         routeData.layer.getBounds(),
-
         {
-
           padding:[40,40]
-
         }
-
       );
-
     }
-
     // FOCUS MODE (mobile-only). On a small map, 20+ visible polylines are
     // indistinguishable — tapping a route name should visually "single out"
     // that route by dimming every other loaded polyline. We keep desktop
@@ -1830,144 +1368,76 @@ routes.forEach((route)=>{
     if(isMobileViewport){
       applyRouteFocus(routeData);
     }
-
   });
-
-
   checkbox.addEventListener("change",()=>{
-
     if(checkbox.checked){
-
       loadRoute(route,routeData);
-
       routeData.visible=true;
-
     }
-
     else{
-
       if(routeData.layer){
-
         map.removeLayer(routeData.layer);
-
       }
-
       routeData.visible=false;
-
       if(routeData.animationFrame){
-
         cancelAnimationFrame(routeData.animationFrame);
-
         routeData.animationFrame=null;
-
       }
-
       if(routeData.animationLayer){
-
         map.removeLayer(routeData.animationLayer);
-
         routeData.animationLayer=null;
-
       }
-
     }
-
   });
-
-
   play.addEventListener("click",(e)=>{
-
     e.preventDefault();
-
     e.stopPropagation();
-
-
     if(!routeData.coordinates ||
       routeData.coordinates.length < 2){
-
       routeData.pendingPlay = true;
-
       if(!routeData.layer){
-
         // Fetch the GPX data quietly (show=false) - the route
         // will NOT appear on the map until it's actually ready
         // to animate, and the checkbox stays unchecked until then.
         loadRoute(route,routeData,false);
-
       }
-
       return;
-
     }
-
-
     if(routeData.layer &&
       routeData.layer.getBounds().isValid()){
-
       map.fitBounds(
-
         routeData.layer.getBounds(),
-
         {
-
           padding:[40,40]
-
         }
-
       );
-
     }
-
-
     if(!checkbox.checked){
-
       checkbox.checked=true;
-
       routeData.visible=true;
-
     }
-
-
     if(routeData.layer){
-
       map.removeLayer(routeData.layer);
-
     }
-
-
     const hideMapCheckbox =
       document.getElementById("hideMapDuringAnimation");
-
     if(hideMapCheckbox && hideMapCheckbox.checked){
-
       setSideMenuMinimized(true);
-
       animateRoute(routeData,route,()=>{
         setSideMenuMinimized(false);
       });
-
     }
     else{
-
       animateRoute(routeData,route);
-
     }
-
   });
-
 });
-
-
 // No routes are loaded here by default - GPX files are only
 // fetched once a user checks a route (keeps memory usage low).
-
-
 const speedLabel = document.createElement("div");
-
 speedLabel.style.display = "flex";
 speedLabel.style.alignItems = "center";
 speedLabel.style.gap = "6px";
-
 speedLabel.innerHTML = `
 <span>Play Route in:</span>
 <input
@@ -1984,224 +1454,111 @@ style="width:50px;"
 Hide menu during animation
 </label>
 `;
-
-
 speedControl.appendChild(speedLabel);
-
-
 const speedInput =
   document.getElementById("animationSpeed");
-
-
 speedInput.addEventListener("input",()=>{
-
   if(speedInput.value < 1){
-
     speedInput.value=1;
-
   }
-
   if(speedInput.value > 300){
-
     speedInput.value=300;
-
   }
-
   speedInput.value =
     Math.floor(speedInput.value);
-
 });
-
-
 // Flatten GPX multi-segment tracks into one continuous route
-
 function flattenCoordinates(coords){
-
   let result=[];
-
   function recurse(arr){
-
     arr.forEach(item=>{
-
       if(Array.isArray(item)){
-
         recurse(item);
-
       }
-
       else if(item && item.lat && item.lng){
-
         result.push(item);
-
       }
-
     });
-
   }
-
   recurse(coords);
-
   return result;
-
 }
-
-
 function animateRoute(routeData,route,onComplete){
-
   if(routeData.animationLayer){
-
     map.removeLayer(routeData.animationLayer);
-
   }
-
   if(routeData.animationFrame){
-
     cancelAnimationFrame(routeData.animationFrame);
-
   }
-
-
   const animatedLine =
     L.polyline([],
-
       {
-
         color:route.color,
-
         weight:3,
-
         opacity:0.85,
-
         smoothFactor:2
-
       }
-
     ).addTo(map);
-
-
   animatedLine.bindTooltip(route.name,{
-
     sticky:true,
-
     direction:"top"
-
   });
-
-
   routeData.animationLayer =
     animatedLine;
-
-
   const points =
     routeData.coordinates;
-
-
   const duration =
     Number(speedInput.value) * 1000;
-
-
   let startTime=null;
-
-
   function animate(timestamp){
-
     if(!startTime){
-
       startTime=timestamp;
-
     }
-
-
     const progress=Math.min(
-
       (timestamp-startTime)/duration,
-
       1
-
     );
-
-
     const index=Math.floor(
-
       progress*(points.length-1)
-
     );
-
-
     animatedLine.setLatLngs(
-
       points.slice(
         0,
         index+1
       )
-
     );
-
-
     if(progress<1){
-
       routeData.animationFrame =
         requestAnimationFrame(animate);
-
     }
-
     else{
-
       routeData.animationFrame=null;
-
       if(typeof onComplete === "function"){
-
         onComplete();
-
       }
-
     }
-
   }
-
-
   routeData.animationFrame =
     requestAnimationFrame(animate);
-
 }
-
-
 // =======================
 // MINIMIZE / EXPAND MENU
 // =======================
-
 const sideMenu = document.getElementById("sideMenu");
-
 const minimizeButton =
   document.getElementById("minimizeButton");
-
-
 minimizeButton.addEventListener("click",()=>{
-
   sideMenu.classList.toggle("minimized");
-
   if(sideMenu.classList.contains("minimized")){
-
     minimizeButton.textContent="▲";
-
   }
-
   else{
-
     minimizeButton.textContent="▼";
-
   }
-
 });
-
-
 window.addEventListener("resize",()=>{
-
   map.invalidateSize();
-
 });
-
 </script>
-
 </body>
 </html>
